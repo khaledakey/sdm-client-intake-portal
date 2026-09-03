@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --midnight: #0a0f1a;
+  --deep-ocean: #0d1b2e;
+  --slate: #1a2a3e;
+  --teal: #1e6e6b;
+  --emerald: #2dac72;
+  --gold: #c9a84c;
+  --cream: #f5f0e8;
+  --mist: #b8c4d0;
+  --cyan: #3ecfb2;
+}
+
+* {
+  border-color: theme('colors.slate.DEFAULT' / 15%);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #f5f7f6;
+  color: var(--midnight);
+}
+
+::selection {
+  background: var(--cyan);
+  color: var(--midnight);
+}
+
+.font-heading {
+  font-family: 'Cinzel', serif;
+}
+
+.font-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-label {
+  font-family: 'DM Mono', ui-monospace, monospace;
+}
+
+/* Scrollbar polish for the portal shell */
+.sdm-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.sdm-scroll::-webkit-scrollbar-thumb {
+  background: rgba(10, 15, 26, 0.15);
+  border-radius: 999px;
+}

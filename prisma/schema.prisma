@@ -1,0 +1,267 @@
+// SDM Client Portal — data model
+//
+// Design note (see Build Brief §9 & §15): this schema mirrors the tables
+// requested in the brief. A few tables carry small additive columns beyond
+// the brief's literal field list (documented inline with "extension:")
+// where the UI genuinely needs them. The Client Intake table is explicitly
+// NOT the authoritative SDM CRM record — `crmSyncedAt` / `crmReference`
+// track the relationship with the downstream CRM without ever being
+// overwritten by it, per §15 ("do not overwrite raw source data").
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Note: SQLite has no native enum type, so every "enum-like" field below
+// is a plain String constrained at the application layer instead of a
+// Prisma `enum` — see src/lib/enums.ts for the canonical value lists and
+// TS union types used throughout the app (Role, OnboardingStatus,
+// DocumentCategory, DocumentReviewStatus, DocumentRequestStatus,
+// TicketCategory, TicketPriority, TicketStatus, SenderType).
+
+model User {
+  id                  String    @id @default(cuid())
+  firstName           String
+  lastName            String
+  email               String    @unique
+  phone               String?
+  passwordAuthRef     String // password_auth_reference: bcrypt hash
+  role                String    @default("CLIENT") // Role: CLIENT | SDM_ADMIN | SDM_TEAM_MEMBER
+  emailVerifiedAt     DateTime?
+  createdAt           DateTime  @default(now())
+  lastLogin           DateTime?
+
+  businesses          Business[]           @relation("BusinessOwner")
+  createdTickets      SupportTicket[]      @relation("TicketCreatedBy")
+  assignedTickets     SupportTicket[]      @relation("TicketAssignedTo")
+  ticketMessages      TicketMessage[]
+  activityLogs        ActivityLog[]
+  documentsUploaded   Document[]           @relation("DocumentUploadedBy")
+  documentsReviewed   Document[]           @relation("DocumentReviewedBy")
+  documentRequests    DocumentRequest[]    @relation("DocumentRequestedBy")
+  emailVerifications  EmailVerificationToken[]
+  passwordResets      PasswordResetToken[]
+
+  @@map("users")
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model Business {
+  id                String   @id @default(cuid())
+  userId            String
+  owner             User     @relation("BusinessOwner", fields: [userId], references: [id], onDelete: Cascade)
+
+  businessName      String
+  tradingName       String?
+  website           String?
+  industry          String?
+  businessDescription String?
+  location          String?
+  employeeCount     String?
+  serviceArea       String?
+  businessStage     String?
+
+  // extension: Section A "main contact" fields — live on the business
+  // record because they describe the business's primary point of contact,
+  // not the portal login (User) itself.
+  mainContactName   String?
+  mainContactEmail  String?
+  mainContactPhone  String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  intake            ClientIntake?
+  documents         Document[]
+  documentRequests  DocumentRequest[]
+  supportTickets    SupportTicket[]
+  activityLogs      ActivityLog[]
+
+  @@index([userId])
+  @@map("businesses")
+}
+
+model ClientIntake {
+  id                       String            @id @default(cuid())
+  businessId               String            @unique
+  business                 Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  onboardingStatus         String            @default("ACCOUNT_CREATED") // OnboardingStatus
+  progressPercentage       Int               @default(17)
+
+  businessGoals            String?
+  targetCustomers          String?
+  marketingObjectives      String?
+  currentMarketingActivity String?
+  marketingChallenges      String?
+  competitors              String?
+  growthTargets            String?
+
+  // extension: additional Section B/C fields from the intake form that
+  // don't have a dedicated column in the brief's Client Intake table.
+  // Kept as JSON so the form can evolve without migrations; the named
+  // columns above remain the stable, CRM-facing fields.
+  extendedData             String?           // JSON blob, see src/lib/intake.ts
+
+  // Downstream CRM relationship (§15) — never overwritten by this table.
+  crmReference             String?
+  crmSyncedAt              DateTime?
+
+  sdmReviewedBy            String?
+  sdmReviewedAt            DateTime?
+  onboardingCompletedBy    String?
+  onboardingCompletedAt    DateTime?
+
+  createdAt                DateTime          @default(now())
+  updatedAt                DateTime          @updatedAt
+
+  @@map("client_intake")
+}
+
+model Document {
+  id             String                @id @default(cuid())
+  businessId     String
+  business       Business              @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  fileName       String
+  documentType   String                @default("OTHER") // DocumentCategory
+  storageReference String
+  fileSize       Int                   @default(0)
+  mimeType       String?
+
+  uploadDate     DateTime              @default(now())
+  uploadedById   String
+  uploadedBy     User                  @relation("DocumentUploadedBy", fields: [uploadedById], references: [id])
+
+  reviewStatus   String                @default("UPLOADED") // DocumentReviewStatus
+  reviewNotes    String?
+  reviewedById   String?
+  reviewedBy     User?                 @relation("DocumentReviewedBy", fields: [reviewedById], references: [id])
+  reviewDate     DateTime?
+
+  fulfillsRequestId String?            @unique
+  fulfillsRequest   DocumentRequest?   @relation(fields: [fulfillsRequestId], references: [id])
+
+  @@index([businessId])
+  @@map("documents")
+}
+
+model DocumentRequest {
+  id           String                 @id @default(cuid())
+  businessId   String
+  business     Business               @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  label        String
+  documentType String                 @default("OTHER") // DocumentCategory
+  note         String?
+  required     Boolean                @default(true)
+  status       String                 @default("OPEN") // DocumentRequestStatus
+
+  // null = system-generated default request (e.g. seeded at signup),
+  // rather than one raised by a specific SDM team member.
+  requestedById String?
+  requestedBy   User?                 @relation("DocumentRequestedBy", fields: [requestedById], references: [id])
+
+  fulfillment   Document?
+
+  createdAt    DateTime               @default(now())
+
+  @@index([businessId])
+  @@map("document_requests")
+}
+
+model SupportTicket {
+  id            String          @id @default(cuid())
+  // SQLite only allows autoincrement() on the primary key, so sequential
+  // ticket numbers (used in "SDM-1042" references) are assigned by the
+  // application at creation time — see nextTicketNumber() in src/lib/tickets.ts.
+  ticketNumber  Int             @unique
+  businessId    String
+  business      Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  subject       String
+  category      String          @default("GENERAL_QUESTION") // TicketCategory
+  priority      String          @default("NORMAL") // TicketPriority
+  status        String          @default("OPEN") // TicketStatus
+
+  createdById   String
+  createdBy     User            @relation("TicketCreatedBy", fields: [createdById], references: [id])
+  assignedToId  String?
+  assignedTo    User?           @relation("TicketAssignedTo", fields: [assignedToId], references: [id])
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  resolvedAt    DateTime?
+
+  messages      TicketMessage[]
+
+  @@index([businessId])
+  @@map("support_tickets")
+}
+
+model TicketMessage {
+  id                   String     @id @default(cuid())
+  ticketId             String
+  ticket               SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  senderId             String?
+  sender               User?      @relation(fields: [senderId], references: [id])
+  senderType           String     // SenderType: CLIENT | SDM_TEAM | SYSTEM
+
+  message              String
+  attachmentReference  String?
+  // extension: internal SDM-only notes must never be exposed to clients
+  // (§8 "Do not expose internal SDM operational notes to clients").
+  internal             Boolean    @default(false)
+
+  createdAt            DateTime   @default(now())
+
+  @@index([ticketId])
+  @@map("ticket_messages")
+}
+
+model ActivityLog {
+  id           String   @id @default(cuid())
+  businessId   String
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
+
+  activityType String
+  description  String
+
+  createdAt    DateTime @default(now())
+
+  @@index([businessId])
+  @@map("activity_log")
+}

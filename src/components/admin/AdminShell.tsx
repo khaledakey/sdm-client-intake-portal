@@ -1,0 +1,97 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import clsx from 'clsx';
+import { IconBriefcase, IconLifeBuoy, IconMenu, IconClose, IconLogout } from '@/components/icons';
+
+const NAV = [
+  { href: '/admin', label: 'Clients', icon: IconBriefcase },
+  { href: '/admin/tickets', label: 'Support Tickets', icon: IconLifeBuoy },
+];
+
+export function AdminShell({ name, role, children }: { name: string; role: string; children: React.ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+
+  async function logout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+    router.refresh();
+  }
+
+  const Links = (
+    <nav className="flex flex-1 flex-col gap-1 px-3">
+      {NAV.map((item) => {
+        const active = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={() => setOpen(false)}
+            className={clsx(
+              'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+              active ? 'bg-emerald/15 text-emerald' : 'text-mist hover:bg-white/5 hover:text-white'
+            )}
+          >
+            <item.icon className="h-5 w-5" />
+            {item.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#f5f7f6]">
+      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col bg-deep-ocean py-6 lg:flex">
+        <div className="mb-8 px-6">
+          <p className="font-heading text-sm font-semibold uppercase tracking-[0.6em] text-gold">SDM</p>
+          <p className="font-label mt-1.5 text-[11px] uppercase tracking-[0.25em] text-cyan">Admin Console</p>
+        </div>
+        {Links}
+        <div className="mt-auto px-3 pt-4">
+          <p className="px-3 pb-2 text-xs text-mist">
+            {name} · {role === 'SDM_ADMIN' ? 'Admin' : 'Team Member'}
+          </p>
+          <button
+            onClick={logout}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-mist hover:bg-white/5 hover:text-white"
+          >
+            <IconLogout className="h-5 w-5" />
+            Sign out
+          </button>
+        </div>
+      </aside>
+
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-black/5 bg-white px-4 py-3 lg:hidden">
+        <button onClick={() => setOpen(true)} aria-label="Open menu" className="p-1.5 text-midnight">
+          <IconMenu className="h-6 w-6" />
+        </button>
+        <p className="font-label text-xs uppercase tracking-[0.35em] text-emerald">SDM Admin</p>
+        <div className="w-6" />
+      </header>
+
+      {open && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
+          <aside className="absolute inset-y-0 left-0 flex w-72 flex-col bg-deep-ocean py-6">
+            <div className="mb-8 flex items-center justify-between px-6">
+              <p className="font-heading text-sm font-semibold uppercase tracking-[0.6em] text-gold">SDM</p>
+              <button onClick={() => setOpen(false)} className="text-mist">
+                <IconClose className="h-5 w-5" />
+              </button>
+            </div>
+            {Links}
+          </aside>
+        </div>
+      )}
+
+      <div className="lg:pl-64">
+        <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">{children}</main>
+      </div>
+    </div>
+  );
+}
