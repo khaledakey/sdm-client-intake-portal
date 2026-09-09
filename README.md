@@ -108,3 +108,16 @@ Phase 6 is wired to SDM's **actual** live Notion CRM ("SDM OS") and Make account
 **Before turning it on:** the Make scenario was built via the Make API against verified module names and the CRM's real schema, but has **not been run** — open it in the Make dashboard (`SDM Client Portal → Notion CRM Sync`, currently inactive), use "Run once" with a sample payload, confirm the Organisation/Contact/Opportunity/Support Ticket records look right, and only then activate it. Also confirm the Support Tickets database is shared with whichever Notion integration the "Saoirse's Notion Internal connection" in Make uses (Notion → database → `···` → Connections) — new databases aren't automatically visible to an existing integration.
 
 Everything else — authentication, client accounts, the full intake flow with autosave, the document upload centre with SDM review workflow, the support ticket system with email notifications, and the SDM admin console (Phases 1–5) — is implemented end-to-end.
+
+## Public lead intake (`/get-started`)
+
+An unauthenticated lead-capture form for prospects who don't have a portal account yet — the marketing website can link straight to it. No login, no account creation.
+
+- Route: `src/app/get-started/page.tsx`, form component in `src/components/public/LeadIntakeForm.tsx`, shared schema/options in `src/lib/leadIntake.ts`.
+- Submissions POST to `src/app/api/public/lead-intake/route.ts`, which validates server-side (mirroring the client-side Zod validation), generates `submission_id` (UUID) and an ISO-8601 `timestamp`, and forwards a flat JSON payload (`form_version: "intake-v1"`) to `LEAD_INTAKE_WEBHOOK_URL`.
+- Includes a hidden honeypot field: a bot that fills it gets a fake success with nothing forwarded.
+- Not wired into `src/middleware.ts`'s protected-path list, so it's reachable with no session cookie.
+
+**Reuses the same Make webhook as the CRM sync above** (`LEAD_INTAKE_WEBHOOK_URL` defaults to the same URL as `INTEGRATION_WEBHOOK_URL`, i.e. the `SDM Client Portal → Notion CRM Sync` scenario's webhook) — per the brief for this feature, which named that webhook explicitly. Two things to check before relying on it:
+- **That scenario is still inactive** (see above) — submissions will queue at the webhook rather than sync to Notion until it's reviewed and turned on.
+- **The payload shape is different from the rest of the app.** Every other event goes through `dispatchIntegrationEvent()` (`src/lib/integration.ts`), which wraps a camelCase payload in an envelope (`{eventId, type, formVersion, occurredAt, payload}`). This form instead posts the flat, snake_case shape requested for it directly (`event_type`, `submission_id`, `first_name`, `company_name`, ...), with no `userId`/`businessId` (there's no account). If the existing scenario's Notion-mapping modules expect the envelope shape, they'll need a second branch (or a dedicated scenario) that reads this flat shape before lead submissions will land correctly in Notion — worth confirming in the Make dashboard alongside the "Before turning it on" checklist above.
