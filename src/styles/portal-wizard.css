@@ -1,0 +1,93 @@
+/* Portal Get Started Wizard — fonts + tokens.
+   Import once (e.g. in main.jsx / App.jsx): import './portal-wizard.css'
+   Font files are served from /public/fonts/ (Next.js serves /public at the
+   site root, so they're referenced here as /fonts/…). */
+
+@font-face { font-family: "Cinzel"; src: url("/fonts/cinzel-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Cormorant Garamond"; src: url("/fonts/cormorant-garamond-latin-300-normal.woff2") format("woff2"); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Cormorant Garamond"; src: url("/fonts/cormorant-garamond-v21-latin-regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "DM Mono"; src: url("/fonts/dm-mono-v16-latin-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "DM Mono"; src: url("/fonts/dm-mono-v16-latin-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+/* DM Mono ships only 400/500 upstream — 700 synthesises from 500, same as the live site. */
+
+:root {
+  /* type */
+  --pw-display: "Cinzel", Georgia, serif;
+  --pw-serif: "Cormorant Garamond", Georgia, serif;
+  --pw-mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* brand colour */
+  --pw-dark: #0e2e23;        /* hero band — aligned with the website's dark sections */
+  --pw-emerald: #146044;     /* actions, eyebrows, focus ring */
+  --pw-emerald-hover: #0e2e23;
+  --pw-forest: #0e2e23;      /* heading ink */
+  --pw-gold: #9c7720;        /* completed steps, NEXT · labels */
+  --pw-gold-bright: #c9a84c; /* gold on dark */
+
+  /* ink ramp */
+  --pw-ink-900: #0e2e23;
+  --pw-ink-700: #2c4238;
+  --pw-ink-600: #3a5247;
+  --pw-ink-500: #4a6358;
+
+  /* surfaces */
+  --pw-page: #f8faf8;
+  --pw-card: #ffffff;
+  --pw-tint: #f1f6f3;
+  --pw-footer: #edf3ef;
+  --pw-line: rgba(14, 46, 35, 0.15);
+  --pw-line-strong: rgba(14, 46, 35, 0.28);
+
+  /* error (warm amber — the brand has no red) */
+  --pw-error-ink: #8a5214;
+  --pw-error-rule: #b9781f;
+  --pw-error-bg: #fbf3e7;
+  --pw-error-border: #d9b98a;
+
+  /* shape */
+  --pw-radius-input: 10px;
+  --pw-radius-card: 12px;
+  --pw-radius-panel: 16px;
+  --pw-shadow-xs: 0 1px 2px rgba(14, 46, 35, 0.05);
+}
+
+/* Native control sizing the component relies on */
+.pw-control {
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid var(--pw-line-strong);
+  border-radius: var(--pw-radius-input);
+  padding: 12px;
+  font-family: var(--pw-serif);
+  font-size: 16px;
+  color: var(--pw-forest);
+  outline: none;
+}
+.pw-control:focus { outline: 2px solid var(--pw-emerald); outline-offset: 0; }
+.pw-control[aria-invalid="true"] { border-color: var(--pw-error-rule); box-shadow: 0 0 0 1px var(--pw-error-rule); }
+textarea.pw-control { resize: vertical; min-height: 92px; }
+
+.pw-btn {
+  font-family: var(--pw-mono);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  padding: 20px 40px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out, transform 200ms ease-out;
+}
+.pw-btn--primary { background: var(--pw-emerald); color: #fff; border: none; box-shadow: var(--pw-shadow-xs); }
+.pw-btn--primary:hover:not(:disabled) { background: var(--pw-emerald-hover); transform: translateY(-2px); }
+.pw-btn--secondary { background: transparent; color: var(--pw-emerald); border: 2px solid var(--pw-emerald); }
+.pw-btn--secondary:hover { background: var(--pw-emerald); color: #fff; }
+.pw-btn:disabled { opacity: 0.5; cursor: default; }
+.pw-btn:focus-visible { outline: 2px solid var(--pw-gold); outline-offset: 2px; }
+
+.pw-link { color: var(--pw-emerald); text-decoration: none; }
+.pw-link:hover { color: var(--pw-forest); text-decoration: underline; }
