@@ -4,7 +4,12 @@ import { randomUUID } from 'crypto';
 /** Backs the branded /get-started wizard (src/components/public/PortalWizard.jsx).
  * Distinct from /api/public/lead-intake: this scenario (CRM-01) expects its
  * own flat, human-readable snake_case shape, not the envelope the rest of
- * the app's integration events use. */
+ * the app's integration events use.
+ *
+ * Field names and value codes below are verified against the live Make
+ * scenario's webhook trigger ("Integration Webhooks, Notion", id 7322391) —
+ * every `{{1.<name>}}` reference the scenario's blueprint actually uses.
+ * Don't rename/re-derive these independently; check the blueprint first. */
 
 const REQUIRED_STRING_FIELDS = [
   'firstName',
@@ -26,29 +31,26 @@ const REQUIRED_STRING_FIELDS = [
   'source',
 ] as const;
 
-const CONTACT_METHOD_LABELS: Record<string, string> = {
-  email: 'Email',
-  phone: 'Phone',
-  either: 'Either',
+// The Make scenario's "Preferred Contact"/"Received At" switches expect the
+// raw lowercase codes below verbatim and do their own display-label
+// translation — do NOT pre-translate contact_preference or timeline here,
+// or the switch falls through to its default case and silently records the
+// wrong value (this previously mis-recorded every non-"exploring" timeline
+// and every non-"Email" contact preference).
+const TIMELINE_CODES: Record<string, string> = {
+  now: 'immediately',
+  '30-60': '30-60 days',
+  exploring: 'exploring',
 };
 
-const STAGE_LABELS: Record<string, string> = {
-  startup: 'Startup',
-  established: 'Established',
-  scaling: 'Scaling',
-};
-
+// "Budget Band" in Notion is rich_text with no Make-side translation, so a
+// human-readable label (rather than the wizard's internal code) is fine —
+// and better for anyone reading the CRM record directly.
 const BUDGET_LABELS: Record<string, string> = {
   '<500': 'Under €500',
   '500-1000': '€500 – €1,000',
   '1000-2500': '€1,000 – €2,500',
   '2500+': '€2,500+',
-};
-
-const TIMELINE_LABELS: Record<string, string> = {
-  now: 'Immediately',
-  '30-60': 'In the next 30–60 days',
-  exploring: 'Just exploring for now',
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -92,28 +94,30 @@ export async function POST(request: Request) {
   const timeline = str(body, 'timeline');
 
   const payload = {
-    first_name: str(body, 'firstName'),
-    last_name: str(body, 'lastName'),
-    work_email: email,
-    mobile_or_phone: str(body, 'phone'),
-    your_role_in_the_business: str(body, 'role'),
-    preferred_contact_method: CONTACT_METHOD_LABELS[contactMethod] ?? contactMethod,
-    business_name: str(body, 'businessName'),
-    town_or_county: str(body, 'location'),
-    stage_of_the_business: STAGE_LABELS[stage] ?? stage,
-    team_size: str(body, 'teamSize'),
-    website_or_main_social_link: str(body, 'website'),
-    what_does_the_business_do: str(body, 'description'),
-    what_marketing_are_you_doing_today: str(body, 'current'),
-    which_outcome_matters_most_right_now: str(body, 'outcome'),
-    biggest_marketing_challenge_you_want_help_with: str(body, 'challenge'),
-    approximate_monthly_budget: BUDGET_LABELS[budget] ?? budget,
-    when_would_you_like_to_act: TIMELINE_LABELS[timeline] ?? timeline,
-    how_did_you_hear_about_us: str(body, 'source'),
-    agree_to_privacy: Boolean(body.consent),
-    marketing_consent: Boolean(body.optin),
+    event_type: 'client.registered',
     submission_id: submissionId,
     timestamp,
+    form_version: 'intake-v1',
+    first_name: str(body, 'firstName'),
+    last_name: str(body, 'lastName'),
+    email,
+    phone: str(body, 'phone'),
+    role: str(body, 'role'),
+    company_name: str(body, 'businessName'),
+    location: str(body, 'location'),
+    website: str(body, 'website'),
+    business_description: str(body, 'description'),
+    business_stage: stage,
+    team_size: str(body, 'teamSize'),
+    desired_outcome: str(body, 'outcome'),
+    marketing_challenge: str(body, 'challenge'),
+    current_marketing: str(body, 'current'),
+    budget_range: BUDGET_LABELS[budget] ?? budget,
+    timeline: TIMELINE_CODES[timeline] ?? timeline,
+    contact_preference: contactMethod,
+    source: str(body, 'source'),
+    privacy_consent: Boolean(body.consent),
+    marketing_opt_in: Boolean(body.optin),
   };
 
   const webhookUrl =
