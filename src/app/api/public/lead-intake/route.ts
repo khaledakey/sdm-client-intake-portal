@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 import { leadIntakeSchema, buildLeadWebhookPayload } from '@/lib/leadIntake';
 
 const WEBHOOK_URL =
-  process.env.LEAD_INTAKE_WEBHOOK_URL || 'https://hook.eu1.make.com/xm0l1sojbu2xu6nvka9fn1gh2f3bfmr6';
+  process.env.LEAD_INTAKE_WEBHOOK_URL || 'https://hook.eu1.make.com/jr5eedmxjodv2pfo66ixdtxbgpwx1ll6';
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
