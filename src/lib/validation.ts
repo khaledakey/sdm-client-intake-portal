@@ -13,6 +13,11 @@ export const registerSchema = z.object({
     .regex(/[0-9]/, 'Password must contain a number'),
 });
 
+/** Same shape as registerSchema minus `password` — used by the
+ * server-to-server POST /api/users route, which generates its own
+ * password and emails a set-password link instead of taking one. */
+export const createUserApiSchema = registerSchema.omit({ password: true });
+
 export const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
   password: z.string().min(1),

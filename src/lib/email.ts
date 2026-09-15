@@ -115,6 +115,20 @@ export async function sendPasswordResetEmail(to: string, firstName: string, rese
   });
 }
 
+export async function sendWelcomeSetPasswordEmail(to: string, firstName: string, setPasswordUrl: string) {
+  await sendEmail({
+    to,
+    subject: 'Your SDM Client Portal account is ready',
+    html: wrapTemplate(
+      `Welcome, ${firstName}.`,
+      `<p style="font-size:14px;line-height:1.6;">Your SDM Client Portal account has been created. Set a password to log in — this link expires in 24 hours.</p>
+       <p><a href="${setPasswordUrl}" style="display:inline-block;background:#1e6e6b;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-size:14px;">Set your password</a></p>
+       <p style="font-size:12px;color:#5b6b7a;">Or paste this link into your browser: ${setPasswordUrl}</p>`
+    ),
+    text: `Welcome, ${firstName}. Your SDM Client Portal account is ready — set a password to log in: ${setPasswordUrl}`,
+  });
+}
+
 export async function sendTicketCreatedEmails(opts: {
   clientEmail: string;
   clientName: string;
