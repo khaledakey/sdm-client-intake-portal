@@ -79,7 +79,14 @@ export async function POST(req: Request) {
     data: { userId: user.id, tokenHash: hash, expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24) },
   });
   const setPasswordUrl = `${process.env.APP_URL || 'http://localhost:3000'}/reset-password?token=${raw}`;
-  await sendWelcomeSetPasswordEmail(email, firstName, setPasswordUrl);
+  const emailResult = await sendWelcomeSetPasswordEmail(email, firstName, setPasswordUrl);
+  const inviteEmail =
+    emailResult.status === 'sent'
+      ? { status: 'sent' as const, ...(emailResult.messageId ? { messageId: emailResult.messageId } : {}) }
+      : { status: 'failed' as const, error: emailResult.error };
 
-  return NextResponse.json({ ok: true, userId: user.id, businessId: business.id }, { status: 201 });
+  return NextResponse.json(
+    { ok: true, userId: user.id, businessId: business.id, inviteEmail },
+    { status: 201 }
+  );
 }

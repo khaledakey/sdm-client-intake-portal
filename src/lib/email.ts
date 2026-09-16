@@ -4,12 +4,17 @@
  * SDM email and automation workflow.")
  *
  * EMAIL_PROVIDER env var selects the transport:
- *   - "console" (default): logs the message, always works, zero setup.
- *   - "smtp": sends via nodemailer using SMTP_* env vars.
+ *   - "console" (default): logs the message. Local dev only — see the
+ *     production guard below.
+ *   - "smtp": sends via nodemailer using SMTP_* env vars. Not usable on
+ *     Railway Hobby/Trial (outbound SMTP is blocked there).
  *   - "webhook": POSTs a JSON payload to EMAIL_WEBHOOK_URL — point this at
- *     a Make.com scenario or Hostinger automation that owns real delivery
- *     from info@saoirsedigital.com.
+ *     a Make.com scenario or Hostinger automation that owns real delivery.
+ *   - "resend": sends via the Resend HTTPS API (RESEND_API_KEY). This is
+ *     the production transport.
  */
+
+export type EmailResult = { status: 'sent'; messageId?: string } | { status: 'failed'; error: string };
 
 interface EmailMessage {
   to: string;
@@ -19,14 +24,37 @@ interface EmailMessage {
   replyTo?: string;
 }
 
-async function sendViaConsole(message: EmailMessage) {
-  // eslint-disable-next-line no-console
-  console.log(
-    `\n[email:console] To: ${message.to}\nSubject: ${message.subject}\n${message.text}\n`
+function isProd() {
+  return process.env.NODE_ENV === 'production';
+}
+
+// Only ever fires once per process, so a misconfigured deploy gets one loud
+// line instead of flooding logs on every request.
+let warnedMisconfigured = false;
+function warnProductionMisconfig(reason: string) {
+  if (warnedMisconfigured) return;
+  warnedMisconfigured = true;
+  console.error(
+    `[email] PRODUCTION MISCONFIGURATION: ${reason}. No real email will be sent until this is fixed.`
   );
 }
 
-async function sendViaSmtp(message: EmailMessage) {
+/** Local-dev transport. In production this never sends a real email — it
+ * exists only so the app doesn't crash if EMAIL_PROVIDER is left unset —
+ * and it must never print a reset/verification/set-password token or URL. */
+async function sendViaConsole(message: EmailMessage): Promise<EmailResult> {
+  if (isProd()) {
+    warnProductionMisconfig('EMAIL_PROVIDER is "console" (or unset)');
+    // eslint-disable-next-line no-console
+    console.error(`[email:console] To: ${message.to}\nSubject: ${message.subject}\n(body redacted in production)`);
+    return { status: 'failed', error: 'Email provider is not configured for production (EMAIL_PROVIDER=console).' };
+  }
+  // eslint-disable-next-line no-console
+  console.log(`\n[email:console] To: ${message.to}\nSubject: ${message.subject}\n${message.text}\n`);
+  return { status: 'sent' };
+}
+
+async function sendViaSmtp(message: EmailMessage): Promise<EmailResult> {
   const nodemailer = await import('nodemailer');
   const transport = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -44,12 +72,16 @@ async function sendViaSmtp(message: EmailMessage) {
     text: message.text,
     replyTo: message.replyTo,
   });
+  return { status: 'sent' };
 }
 
-async function sendViaWebhook(message: EmailMessage) {
+async function sendViaWebhook(message: EmailMessage): Promise<EmailResult> {
   const url = process.env.EMAIL_WEBHOOK_URL;
   if (!url) {
-    console.warn('[email:webhook] EMAIL_WEBHOOK_URL not set — falling back to console.');
+    warnProductionMisconfig('EMAIL_PROVIDER is "webhook" but EMAIL_WEBHOOK_URL is not set');
+    if (isProd()) {
+      return { status: 'failed', error: 'Email provider is not configured (missing EMAIL_WEBHOOK_URL).' };
+    }
     return sendViaConsole(message);
   }
   await fetch(url, {
@@ -62,17 +94,82 @@ async function sendViaWebhook(message: EmailMessage) {
     },
     body: JSON.stringify(message),
   });
+  return { status: 'sent' };
 }
 
-export async function sendEmail(message: EmailMessage) {
+const RESEND_TIMEOUT_MS = 10_000;
+
+/** Production transport: Resend's HTTPS API via plain fetch (see PR
+ * description for why fetch was chosen over the `resend` package). */
+async function sendViaResend(message: EmailMessage): Promise<EmailResult> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    warnProductionMisconfig('EMAIL_PROVIDER is "resend" but RESEND_API_KEY is not set');
+    return { status: 'failed', error: 'Email provider is not configured (missing RESEND_API_KEY).' };
+  }
+
+  const from = process.env.EMAIL_FROM || 'Saoirse Digital Marketing <info@saoirsedigital.com>';
+  const replyTo = message.replyTo || process.env.EMAIL_REPLY_TO || process.env.SDM_SUPPORT_INBOX || undefined;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), RESEND_TIMEOUT_MS);
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to: message.to,
+        subject: message.subject,
+        html: message.html,
+        text: message.text,
+        ...(replyTo ? { reply_to: replyTo } : {}),
+      }),
+      signal: controller.signal,
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      const error =
+        (data && typeof data === 'object' && 'message' in data && String((data as { message: unknown }).message)) ||
+        `Resend API returned ${res.status}`;
+      console.error(`[email:resend] failed to send to ${message.to}: ${res.status} ${error}`);
+      return { status: 'failed', error };
+    }
+
+    const messageId = data && typeof data === 'object' && 'id' in data ? String((data as { id: unknown }).id) : undefined;
+    // eslint-disable-next-line no-console
+    console.log(`[email:resend] sent to ${message.to} messageId=${messageId ?? 'unknown'}`);
+    return { status: 'sent', messageId };
+  } catch (err) {
+    const timedOut = err instanceof Error && err.name === 'AbortError';
+    const error = timedOut
+      ? `Timed out contacting Resend after ${RESEND_TIMEOUT_MS / 1000}s.`
+      : err instanceof Error
+        ? err.message
+        : 'Unknown error contacting Resend.';
+    console.error(`[email:resend] failed to send to ${message.to}: ${error}`);
+    return { status: 'failed', error };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export async function sendEmail(message: EmailMessage): Promise<EmailResult> {
   const provider = process.env.EMAIL_PROVIDER || 'console';
   try {
     if (provider === 'smtp') return await sendViaSmtp(message);
     if (provider === 'webhook') return await sendViaWebhook(message);
+    if (provider === 'resend') return await sendViaResend(message);
     return await sendViaConsole(message);
   } catch (err) {
-    console.error(`[email:${provider}] failed to send, falling back to console log`, err);
-    return sendViaConsole(message);
+    const error = err instanceof Error ? err.message : 'Unknown email error';
+    console.error(`[email:${provider}] failed to send to ${message.to}: ${error}`);
+    return { status: 'failed', error };
   }
 }
 
@@ -87,8 +184,8 @@ function wrapTemplate(title: string, bodyHtml: string) {
   </body></html>`;
 }
 
-export async function sendVerificationEmail(to: string, firstName: string, verifyUrl: string) {
-  await sendEmail({
+export async function sendVerificationEmail(to: string, firstName: string, verifyUrl: string): Promise<EmailResult> {
+  return sendEmail({
     to,
     subject: 'Verify your SDM Client Portal account',
     html: wrapTemplate(
@@ -101,8 +198,8 @@ export async function sendVerificationEmail(to: string, firstName: string, verif
   });
 }
 
-export async function sendPasswordResetEmail(to: string, firstName: string, resetUrl: string) {
-  await sendEmail({
+export async function sendPasswordResetEmail(to: string, firstName: string, resetUrl: string): Promise<EmailResult> {
+  return sendEmail({
     to,
     subject: 'Reset your SDM Client Portal password',
     html: wrapTemplate(
@@ -115,8 +212,12 @@ export async function sendPasswordResetEmail(to: string, firstName: string, rese
   });
 }
 
-export async function sendWelcomeSetPasswordEmail(to: string, firstName: string, setPasswordUrl: string) {
-  await sendEmail({
+export async function sendWelcomeSetPasswordEmail(
+  to: string,
+  firstName: string,
+  setPasswordUrl: string
+): Promise<EmailResult> {
+  return sendEmail({
     to,
     subject: 'Your SDM Client Portal account is ready',
     html: wrapTemplate(
