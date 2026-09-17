@@ -32,34 +32,36 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div>
-        <h1 className="font-heading text-2xl font-semibold text-midnight">Check your inbox</h1>
-        <p className="mt-3 text-sm text-slate">
-          If an account exists for <strong>{email}</strong>, we&apos;ve sent a link to reset your
-          password. It expires in 1 hour.
-        </p>
-        <Link href="/login" className="mt-6 inline-block text-sm font-medium text-teal hover:underline">
-          Back to sign in
-        </Link>
+        <div className="alert alert-success" style={{ marginBottom: 22 }}>
+          If an account exists for <strong>{email}</strong>, a reset link is on its way. It expires
+          in 1 hour.
+        </div>
+        <div className="auth-link-row">
+          &larr; <Link href="/login">Back to sign in</Link>
+        </div>
       </div>
     );
   }
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-semibold text-midnight">Reset your password</h1>
-      <p className="mt-2 text-sm text-slate">
-        Enter your account email and we&apos;ll send you a secure reset link.
-      </p>
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+      <div className="eyebrow">Client Portal</div>
+      <h1>Reset your password</h1>
+      <p className="lede">Enter your email and we&rsquo;ll send a link to reset it.</p>
+      <form onSubmit={onSubmit}>
         <Input label="Email address" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <Button type="submit" className="w-full" loading={loading}>
+        {error && (
+          <div className="alert alert-error" style={{ marginBottom: 18 }}>
+            {error}
+          </div>
+        )}
+        <Button type="submit" loading={loading} style={{ width: '100%', justifyContent: 'center' }}>
           Send reset link
         </Button>
       </form>
-      <Link href="/login" className="mt-6 inline-block text-sm font-medium text-teal hover:underline">
-        Back to sign in
-      </Link>
+      <div className="auth-link-row">
+        &larr; <Link href="/login">Back to sign in</Link>
+      </div>
     </div>
   );
 }

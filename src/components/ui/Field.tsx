@@ -1,31 +1,29 @@
 'use client';
 
-import { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes, forwardRef } from 'react';
+import { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes, forwardRef, useId } from 'react';
 import clsx from 'clsx';
-
-const fieldBase =
-  'w-full rounded-lg border border-slate/20 bg-white px-3.5 py-2.5 text-sm text-midnight placeholder:text-mist focus:border-teal focus:outline-none focus:ring-2 focus:ring-teal/20 disabled:bg-black/5';
 
 interface WrapperProps {
   label?: string;
   hint?: string;
   error?: string;
   required?: boolean;
+  htmlFor?: string;
   children: React.ReactNode;
 }
 
-export function FieldWrapper({ label, hint, error, required, children }: WrapperProps) {
+export function FieldWrapper({ label, hint, error, required, htmlFor, children }: WrapperProps) {
   return (
-    <label className="block">
+    <div className="field">
       {label && (
-        <span className="mb-1.5 block text-sm font-medium text-midnight">
-          {label} {required && <span className="text-teal">*</span>}
-        </span>
+        <label htmlFor={htmlFor}>
+          {label} {required && <span className="req">*</span>}
+        </label>
       )}
       {children}
-      {hint && !error && <span className="mt-1 block text-xs text-mist">{hint}</span>}
-      {error && <span className="mt-1 block text-xs text-red-600">{error}</span>}
-    </label>
+      {hint && !error && <span className="hint">{hint}</span>}
+      {error && <span className="error-msg">{error}</span>}
+    </div>
   );
 }
 
@@ -36,12 +34,14 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, hint, error, className, required, ...props },
+  { label, hint, error, className, required, id, ...props },
   ref
 ) {
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
   return (
-    <FieldWrapper label={label} hint={hint} error={error} required={required}>
-      <input ref={ref} className={clsx(fieldBase, error && 'border-red-400', className)} {...props} />
+    <FieldWrapper label={label} hint={hint} error={error} required={required} htmlFor={inputId}>
+      <input ref={ref} id={inputId} className={clsx('input', error && 'error', className)} {...props} />
     </FieldWrapper>
   );
 });
@@ -53,15 +53,18 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
-  { label, hint, error, className, required, rows = 4, ...props },
+  { label, hint, error, className, required, rows = 4, id, ...props },
   ref
 ) {
+  const generatedId = useId();
+  const textareaId = id ?? generatedId;
   return (
-    <FieldWrapper label={label} hint={hint} error={error} required={required}>
+    <FieldWrapper label={label} hint={hint} error={error} required={required} htmlFor={textareaId}>
       <textarea
         ref={ref}
+        id={textareaId}
         rows={rows}
-        className={clsx(fieldBase, 'resize-y', error && 'border-red-400', className)}
+        className={clsx('textarea', error && 'error', className)}
         {...props}
       />
     </FieldWrapper>
@@ -77,12 +80,14 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
-  { label, hint, error, className, required, options, placeholder, ...props },
+  { label, hint, error, className, required, options, placeholder, id, ...props },
   ref
 ) {
+  const generatedId = useId();
+  const selectId = id ?? generatedId;
   return (
-    <FieldWrapper label={label} hint={hint} error={error} required={required}>
-      <select ref={ref} className={clsx(fieldBase, error && 'border-red-400', className)} {...props}>
+    <FieldWrapper label={label} hint={hint} error={error} required={required} htmlFor={selectId}>
+      <select ref={ref} id={selectId} className={clsx('select', className)} {...props}>
         {placeholder && (
           <option value="" disabled>
             {placeholder}
@@ -112,8 +117,8 @@ export function MultiSelect({ label, hint, options, value, onChange }: MultiSele
     else onChange([...value, v]);
   }
   return (
-    <div>
-      {label && <span className="mb-1.5 block text-sm font-medium text-midnight">{label}</span>}
+    <div className="field">
+      {label && <label>{label}</label>}
       <div className="flex flex-wrap gap-2">
         {options.map((opt) => {
           const active = value.includes(opt.value);
@@ -122,19 +127,19 @@ export function MultiSelect({ label, hint, options, value, onChange }: MultiSele
               type="button"
               key={opt.value}
               onClick={() => toggle(opt.value)}
-              className={clsx(
-                'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
+              className="pill"
+              style={
                 active
-                  ? 'border-teal bg-teal/10 text-teal'
-                  : 'border-slate/20 bg-white text-midnight hover:border-teal/40'
-              )}
+                  ? { background: 'var(--surface-tint)', color: 'var(--portal-action)', borderColor: 'var(--portal-action)' }
+                  : { background: '#fff', color: 'var(--text-body)', borderColor: 'var(--border-card)' }
+              }
             >
               {opt.label}
             </button>
           );
         })}
       </div>
-      {hint && <span className="mt-1 block text-xs text-mist">{hint}</span>}
+      {hint && <span className="hint">{hint}</span>}
     </div>
   );
 }

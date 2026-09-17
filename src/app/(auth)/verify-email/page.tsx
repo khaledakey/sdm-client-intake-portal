@@ -35,14 +35,20 @@ function VerifyEmailInner() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-semibold text-midnight">Email verification</h1>
-      {status === 'checking' && <p className="mt-3 text-sm text-slate">Verifying your email address&hellip;</p>}
+      <h1>Email verification</h1>
+      {status === 'checking' && <p className="lede">Verifying your email address&hellip;</p>}
       {status === 'ok' && (
-        <p className="mt-3 text-sm text-emerald">Your email has been verified. You&apos;re all set.</p>
+        <div className="alert alert-success" style={{ marginTop: 12 }}>
+          Your email has been verified. You&apos;re all set.
+        </div>
       )}
-      {status === 'error' && <p className="mt-3 text-sm text-red-600">{message}</p>}
+      {status === 'error' && (
+        <div className="alert alert-error" style={{ marginTop: 12 }}>
+          {message}
+        </div>
+      )}
       <Link href="/dashboard">
-        <Button className="mt-6">Go to dashboard</Button>
+        <Button style={{ marginTop: 24 }}>Go to dashboard</Button>
       </Link>
     </div>
   );

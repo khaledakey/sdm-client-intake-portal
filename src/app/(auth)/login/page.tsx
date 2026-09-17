@@ -33,11 +33,11 @@ export default function LoginPage() {
 
   return (
     <div>
-      <p className="font-label mb-2 text-xs uppercase tracking-[0.35em] text-cyan">Client Portal</p>
-      <h1 className="font-heading text-2xl font-semibold text-midnight">Welcome back</h1>
-      <p className="mt-2 text-sm text-slate">Sign in to continue your onboarding.</p>
+      <div className="eyebrow">Client Portal</div>
+      <h1>Welcome back</h1>
+      <p className="lede">Sign in to continue your onboarding.</p>
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+      <form onSubmit={onSubmit}>
         <Input
           label="Email address"
           type="email"
@@ -52,16 +52,24 @@ export default function LoginPage() {
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <div className="flex items-center justify-between text-sm">
-          <Link href="/forgot-password" className="text-teal hover:underline">
+        <div style={{ textAlign: 'right', margin: '-8px 0 18px' }}>
+          <Link href="/forgot-password" style={{ fontSize: 12 }}>
             Forgot password?
           </Link>
         </div>
-        <Button type="submit" className="w-full" loading={loading}>
+        {error && (
+          <div className="alert alert-error" style={{ marginBottom: 18 }}>
+            {error}
+          </div>
+        )}
+        <Button type="submit" loading={loading} style={{ width: '100%', justifyContent: 'center' }}>
           Sign in
         </Button>
       </form>
+
+      <div className="auth-link-row" style={{ opacity: 0.55 }}>
+        Invite-only portal &middot; access is granted by SDM
+      </div>
     </div>
   );
 }

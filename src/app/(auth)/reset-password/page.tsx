@@ -1,7 +1,6 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
@@ -35,22 +34,28 @@ function ResetPasswordForm() {
   }
 
   if (!token) {
-    return <p className="text-sm text-red-600">Missing reset token. Please use the link from your email.</p>;
+    return (
+      <div>
+        <h1>Missing reset token</h1>
+        <p className="lede">Please use the link from your email.</p>
+      </div>
+    );
   }
 
   if (done) {
     return (
       <div>
-        <h1 className="font-heading text-2xl font-semibold text-midnight">Password updated</h1>
-        <p className="mt-3 text-sm text-slate">Redirecting you to sign in&hellip;</p>
+        <h1>Password updated</h1>
+        <p className="lede">Redirecting you to sign in&hellip;</p>
       </div>
     );
   }
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-semibold text-midnight">Set a new password</h1>
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+      <div className="eyebrow">Set up your account</div>
+      <h1>Set a new password</h1>
+      <form onSubmit={onSubmit}>
         <Input
           label="New password"
           type="password"
@@ -59,14 +64,15 @@ function ResetPasswordForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <Button type="submit" className="w-full" loading={loading}>
+        {error && (
+          <div className="alert alert-error" style={{ marginBottom: 18 }}>
+            {error}
+          </div>
+        )}
+        <Button type="submit" loading={loading} style={{ width: '100%', justifyContent: 'center' }}>
           Update password
         </Button>
       </form>
-      <Link href="/login" className="mt-6 inline-block text-sm font-medium text-teal hover:underline">
-        Back to sign in
-      </Link>
     </div>
   );
 }
