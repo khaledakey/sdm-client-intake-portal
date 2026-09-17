@@ -154,9 +154,9 @@ a:hover{ color:var(--portal-action-hover); }
 .table tr:last-child td{ border-bottom:none; }
 .table .muted{ color:var(--text-muted); }
 
-/* stacked-card table for mobile (≤600px) */
+/* stacked-card table for mobile (≤900px, matching the shell's own breakpoint) */
 .table-cards{ display:none; }
-@media (max-width:640px){
+@media (max-width:900px){
   .table{ display:none; }
   .table-cards{ display:block; }
   .t-card{ border:1px solid var(--border-card); border-radius:var(--radius-md); padding:16px; margin-bottom:10px; }
@@ -209,6 +209,7 @@ a:hover{ color:var(--portal-action-hover); }
   .header{ display:none; }
   .grid-2{ grid-template-columns:1fr; }
   .auth-side{ display:none; }
+  .list-row{ flex-wrap:wrap; row-gap:10px; }
 }
 .drawer{ position:fixed; inset:0 0 0 auto; width:78%; max-width:300px; background:var(--portal-header); z-index:20; padding:24px 0; }
 .drawer-scrim{ position:fixed; inset:0; background:rgba(14,46,35,.45); z-index:10; }

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input, Select, Textarea } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
+import { IconUpload } from '@/components/icons';
 import { TICKET_CATEGORY_LABELS } from '@/lib/format';
 
 const CATEGORY_OPTIONS = Object.entries(TICKET_CATEGORY_LABELS).map(([value, label]) => ({ value, label }));
@@ -50,21 +51,37 @@ export function NewTicketForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
+    <form onSubmit={onSubmit} className="card card-pad" style={{ maxWidth: 640 }}>
+      <div className="section-title">Tell us what&rsquo;s going on</div>
       <Input label="Subject" required value={subject} onChange={(e) => setSubject(e.target.value)} />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid-2">
         <Select label="Category" options={CATEGORY_OPTIONS} value={category} onChange={(e) => setCategory(e.target.value)} />
-        <Select label="Priority" options={PRIORITY_OPTIONS} value={priority} onChange={(e) => setPriority(e.target.value)} />
+        <Select
+          label="Priority"
+          options={PRIORITY_OPTIONS}
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
+          hint="Low · Normal · High · Urgent, each with a description on hover."
+        />
       </div>
 
       {priority === 'URGENT' && (
-        <div className="rounded-xl border border-gold/40 bg-gold/10 p-4">
-          <p className="text-sm font-medium text-[#8a6f22]">
-            Urgent is reserved for business-critical issues — e.g. your website or ads are down, or an
+        <div
+          className="alert"
+          style={{
+            background: 'var(--status-warn-bg)',
+            borderColor: 'var(--status-warn-border)',
+            color: 'var(--status-warn-text)',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+            marginBottom: 18,
+          }}
+        >
+          <p style={{ margin: '0 0 10px' }}>
+            Urgent is reserved for business-critical issues &mdash; e.g. your website or ads are down, or an
             active campaign is broken. For everything else, High priority gets fast attention too.
           </p>
           <Textarea
-            className="mt-3"
             label="Briefly explain the business impact"
             required
             rows={2}
@@ -78,21 +95,44 @@ export function NewTicketForm() {
         label="Description"
         required
         rows={5}
+        style={{ minHeight: 130 }}
         hint="Include as much detail as you can — what happened, when, and what you've already tried."
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
 
-      <div>
-        <span className="mb-1.5 block text-sm font-medium text-midnight">Attachment (optional)</span>
+      <div className="field">
+        <label>Attachment (optional)</label>
+        <div
+          onClick={() => document.getElementById('ticket-attachment')?.click()}
+          style={{
+            border: '1px dashed var(--border-card)',
+            borderRadius: 'var(--radius-md)',
+            padding: 14,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            color: 'var(--text-muted)',
+            fontSize: 13,
+            cursor: 'pointer',
+          }}
+        >
+          <IconUpload width={15} height={15} />
+          {file ? file.name : 'Choose file — no file chosen'}
+        </div>
         <input
+          id="ticket-attachment"
           type="file"
+          className="hidden"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
-          className="block w-full text-sm text-slate file:mr-4 file:rounded-lg file:border-0 file:bg-teal/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-teal"
         />
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <div className="alert alert-error" style={{ marginBottom: 18 }}>
+          {error}
+        </div>
+      )}
       <Button type="submit" loading={loading}>
         Submit ticket
       </Button>
