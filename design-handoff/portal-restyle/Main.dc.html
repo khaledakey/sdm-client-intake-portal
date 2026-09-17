@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style> html,body{ margin:0; height:100%; } </style>
+</helmet>
+<div class="auth-shell" style="width:1440px;height:900px;">
+  <div class="auth-side">
+    <div class="auth-brand">S · D · M</div>
+    <div class="auth-headline">
+      <div class="k1">DIGITAL MARKETING PARTNER</div>
+      <h2>Saoirse Digital<br><em>Marketing</em></h2>
+      <p>Your secure onboarding and support portal &mdash; a strategic digital marketing partner for Irish SMEs.</p>
+    </div>
+    <div class="auth-foot">CLIENT PORTAL</div>
+  </div>
+  <div class="auth-main">
+    <div class="auth-card">
+      <div class="eyebrow">Client Portal</div>
+      <h1>Welcome back</h1>
+      <p class="lede">Sign in to continue your onboarding.</p>
+      <div class="field"><label>Email address <span class="req">*</span></label><input class="input" type="email" value="hello@kilkennyfitco.ie"></div>
+      <div class="field"><label>Password <span class="req">*</span></label><input class="input" type="password" value="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"></div>
+      <div style="text-align:right;margin:-8px 0 18px;"><a href="ForgotPassword.dc.html" style="font-size:12px;">Forgot password?</a></div>
+      <a class="btn btn-primary" href="Dashboard.dc.html" style="width:100%;justify-content:center;">Sign in</a>
+      <div class="auth-link-row" style="opacity:.55;">Invite-only portal &middot; access is granted by SDM</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"sealUrl":{"editor":null,"default":"/_blob/bdee34e58387ea8e5d060c9dc0e43e4e"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return { sealUrl: this.props.sealUrl }; }
+}
+</script>
+</body>
+</html>

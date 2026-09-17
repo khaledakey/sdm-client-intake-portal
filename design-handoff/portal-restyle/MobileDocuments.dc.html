@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style> html,body{ margin:0; height:100%; } </style>
+</helmet>
+<div class="shell" style="width:390px;height:844px;flex-direction:column;">
+  <div class="topbar" style="display:flex;">
+    <div class="wordmark">S · D · M PORTAL</div>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </div>
+  <div class="content" style="padding:20px 16px 40px;">
+    
+<h1 style="font-size:21px;">Documents</h1>
+<p class="lede" style="font-size:13px;">Track what SDM still needs from you.</p>
+<div class="card card-pad" style="padding:18px;">
+  <div class="eyebrow" style="margin-bottom:10px;">Requested by SDM</div>
+  <div class="t-card"><div style="font-weight:600;font-size:14px;margin-bottom:8px;">Brand guidelines <span class="pill pill-optional" style="margin-left:6px;">Optional</span></div><a class="btn btn-secondary btn-sm" href="#" style="width:100%;justify-content:center;">Upload</a></div>
+  <div class="t-card"><div style="font-weight:600;font-size:14px;margin-bottom:8px;">Website access &mdash; invite sent <span class="pill pill-required" style="margin-left:6px;">Required</span></div><a class="btn btn-secondary btn-sm" href="#" style="width:100%;justify-content:center;">Manage access</a></div>
+  <div class="eyebrow" style="margin:18px 0 10px;">Your documents</div>
+  <div class="t-card"><div style="font-weight:600;font-size:13px;margin-bottom:6px;">Brand guidelines &mdash; Kilkenny Fit.pdf</div>
+    <div class="row"><span class="k">Uploaded</span><span>3 Sept 2026</span></div>
+    <div class="row"><span class="k">Status</span><span class="pill pill-review">Under Review</span></div>
+  </div>
+</div>
+
+  </div>
+  
+</div>
+</x-dc>
+<script data-dc-script data-props='{"sealUrl":{"editor":null,"default":"/_blob/bdee34e58387ea8e5d060c9dc0e43e4e"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return { sealUrl: this.props.sealUrl }; }
+}
+</script>
+</body>
+</html>
