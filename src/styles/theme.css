@@ -116,7 +116,7 @@ a:hover{ color:var(--portal-action-hover); }
 .pill-urgent{ background:var(--status-error-bg); color:var(--status-error-text); border-color:var(--status-error-border);}
 .pill-open{ background:var(--status-warn-bg); color:var(--status-warn-text); border-color:var(--status-warn-border);}
 .pill-progress{ background:var(--surface-tint-alt); color:var(--portal-action); border-color:var(--border-card);}
-.pill-waiting{ background:var(--status-warn-bg); color:var(--status-warn-text-strong); border-color:var(--status-warn-border);}
+.pill-waiting{ background:var(--status-warn-bg); color:var(--status-warn-text); border-color:var(--status-warn-border);}
 .pill-resolved{ background:var(--status-ok-bg); color:var(--status-ok-text); border-color:var(--status-ok-border);}
 
 /* ---- progress + step tracker ---- */
