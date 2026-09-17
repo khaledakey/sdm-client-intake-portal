@@ -1,6 +1,6 @@
 import type { ActivityLog } from '@prisma/client';
 
-function timeAgo(date: Date) {
+export function timeAgo(date: Date) {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
   const units: [number, string][] = [
     [60, 'second'],

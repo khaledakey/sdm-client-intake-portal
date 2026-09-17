@@ -1,5 +1,4 @@
 import { getCurrentUser } from '@/lib/auth';
-import { Card, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ProfileForm, PasswordForm, ResendVerificationButton } from '@/components/portal/AccountForms';
 import { formatDate } from '@/lib/format';
@@ -9,35 +8,31 @@ export default async function AccountPage() {
   if (!user) return null;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold text-midnight">Account Settings</h1>
-        <p className="mt-1 text-sm text-slate">Manage your login details and profile.</p>
-      </div>
+    <div>
+      <h1>Account Settings</h1>
+      <p className="lede">Manage your login details and profile.</p>
 
-      <Card>
-        <CardHeader
-          title="Email address"
-          action={user.emailVerifiedAt ? <Badge tone="emerald">Verified</Badge> : <Badge tone="gold">Unverified</Badge>}
-        />
-        <p className="text-sm text-midnight">{user.email}</p>
-        <p className="mt-1 text-xs text-mist">Account created {formatDate(user.createdAt)}</p>
+      <div className="card card-pad">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <div>
+            <div className="section-title" style={{ margin: 0 }}>Email address</div>
+            <div style={{ marginTop: 10 }}>{user.email}</div>
+            <div className="mono" style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
+              Account created {formatDate(user.createdAt)}
+            </div>
+          </div>
+          {user.emailVerifiedAt ? <Badge tone="emerald">Verified</Badge> : <Badge tone="gold">Unverified</Badge>}
+        </div>
         {!user.emailVerifiedAt && (
-          <div className="mt-4">
+          <div style={{ marginTop: 16 }}>
             <ResendVerificationButton />
           </div>
         )}
-      </Card>
+      </div>
 
-      <Card>
-        <CardHeader title="Profile" />
-        <ProfileForm firstName={user.firstName} lastName={user.lastName} phone={user.phone || ''} />
-      </Card>
+      <ProfileForm firstName={user.firstName} lastName={user.lastName} phone={user.phone || ''} />
 
-      <Card>
-        <CardHeader title="Password" description="Choose a strong, unique password." />
-        <PasswordForm />
-      </Card>
+      <PasswordForm />
     </div>
   );
 }

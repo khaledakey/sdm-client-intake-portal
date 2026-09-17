@@ -1,9 +1,8 @@
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { getOutstandingActions } from '@/lib/actions';
-import { Card, CardHeader } from '@/components/ui/Card';
 import { ActionRequiredList } from '@/components/portal/ActionRequiredList';
-import { ActivityTimeline } from '@/components/portal/ActivityTimeline';
+import { timeAgo } from '@/components/portal/ActivityTimeline';
 
 export default async function NotificationsPage() {
   const user = await getCurrentUser();
@@ -16,21 +15,28 @@ export default async function NotificationsPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold text-midnight">Notifications</h1>
-        <p className="mt-1 text-sm text-slate">Everything SDM needs from you, and a log of what's happened.</p>
-      </div>
+    <div>
+      <h1>Notifications</h1>
+      <p className="lede">Everything SDM needs from you, and a log of what&rsquo;s happened.</p>
 
-      <Card>
-        <CardHeader title="Action Required" />
+      <div className="card card-pad">
+        <div className="section-title">Action Required</div>
         <ActionRequiredList actions={actions} />
-      </Card>
 
-      <Card>
-        <CardHeader title="Activity" />
-        <ActivityTimeline items={activity} />
-      </Card>
+        <div className="section-title" style={{ marginTop: 26 }}>Activity Log</div>
+        {activity.length === 0 ? (
+          <div className="empty" style={{ padding: '16px 0', textAlign: 'left' }}>No activity yet.</div>
+        ) : (
+          activity.map((item) => (
+            <div key={item.id} className="list-row">
+              <div>
+                <div className="title" style={{ fontWeight: 400 }}>{item.description}</div>
+                <div className="sub">{timeAgo(new Date(item.createdAt))}</div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
