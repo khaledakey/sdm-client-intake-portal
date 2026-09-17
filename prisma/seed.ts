@@ -130,7 +130,7 @@ async function main() {
   });
   await ensureDocumentRequest({ businessId: business1.id, label: 'Logo files', documentType: 'LOGOS', required: true, note: 'High-resolution logo files (PNG, SVG, or AI/EPS).' });
   await ensureDocumentRequest({ businessId: business1.id, label: 'Brand guidelines', documentType: 'BRAND_GUIDELINES', required: false, note: 'Existing brand guidelines, if available.' });
-  await ensureDocumentRequest({ businessId: business1.id, label: 'Website access information', documentType: 'WEBSITE_DOCUMENTS', required: true, note: 'CMS/hosting access details.' });
+  await ensureDocumentRequest({ businessId: business1.id, label: 'Website access (grant via platform invite)', documentType: 'WEBSITE_DOCUMENTS', required: true, note: 'CMS/hosting access details.' });
   await ensureActivityLogs(business1.id, [
     { userId: client1.id, activityType: 'ACCOUNT_CREATED', description: 'Aoife Kelly created an SDM Client Portal account for Brightleaf Cafe.' },
   ]);
@@ -212,7 +212,7 @@ async function main() {
     fulfillsRequestId: req2.id,
   });
   await ensureDocumentRequest({ businessId: business2.id, label: 'Brand guidelines', documentType: 'BRAND_GUIDELINES', required: false });
-  await ensureDocumentRequest({ businessId: business2.id, label: 'Website access information', documentType: 'WEBSITE_DOCUMENTS', required: true });
+  await ensureDocumentRequest({ businessId: business2.id, label: 'Website access (grant via platform invite)', documentType: 'WEBSITE_DOCUMENTS', required: true });
   await ensureActivityLogs(business2.id, [
     { userId: client2.id, activityType: 'ACCOUNT_CREATED', description: 'Darragh Byrne created an SDM Client Portal account for Kilkenny Fit Co.' },
     { userId: client2.id, activityType: 'BUSINESS_INFO_UPDATED', description: 'Business information was updated.' },
@@ -314,7 +314,7 @@ async function main() {
     },
   });
   const req3a = await ensureDocumentRequest({ businessId: business3.id, label: 'Logo files', documentType: 'LOGOS', required: true, status: 'FULFILLED' });
-  const req3b = await ensureDocumentRequest({ businessId: business3.id, label: 'Website access information', documentType: 'WEBSITE_DOCUMENTS', required: true, status: 'FULFILLED' });
+  const req3b = await ensureDocumentRequest({ businessId: business3.id, label: 'Website access (grant via platform invite)', documentType: 'WEBSITE_DOCUMENTS', required: true, status: 'FULFILLED' });
   const logoRef = placeholderFile(business3.id, 'cork-craft-brew-logo.txt', 'Placeholder logo asset for Cork Craft Brew Co.');
   const accessRef = placeholderFile(business3.id, 'website-access.txt', 'Placeholder website access notes for Cork Craft Brew Co.');
   await ensureDocument({
