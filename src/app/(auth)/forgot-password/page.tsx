@@ -33,8 +33,10 @@ export default function ForgotPasswordPage() {
     return (
       <div>
         <div className="alert alert-success" style={{ marginBottom: 22 }}>
-          If an account exists for <strong>{email}</strong>, a reset link is on its way. It expires
-          in 1 hour.
+          <span>
+            If an account exists for <strong>{email}</strong>, a reset link is on its way. It
+            expires in 1 hour.
+          </span>
         </div>
         <div className="auth-link-row">
           &larr; <Link href="/login">Back to sign in</Link>

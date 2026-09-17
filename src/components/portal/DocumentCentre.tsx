@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { Select } from '@/components/ui/Field';
 import { IconUpload, IconFile, IconTrash } from '@/components/icons';
 import { DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS, formatBytes, formatDate } from '@/lib/format';
+import { ManageAccessPanel } from '@/components/portal/ManageAccessPanel';
 
 type DocumentRow = {
   id: string;
@@ -50,6 +51,7 @@ export function DocumentCentre({
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [generalCategory, setGeneralCategory] = useState('OTHER');
+  const [manageAccessOpen, setManageAccessOpen] = useState(false);
   const generalInputRef = useRef<HTMLInputElement>(null);
   const requestInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -119,7 +121,14 @@ export function DocumentCentre({
             </div>
             {request.note && <div className="sub">{request.note}</div>}
           </div>
-          {request.status === 'OPEN' && (
+          {request.status === 'OPEN' && request.documentType === 'WEBSITE_DOCUMENTS' && (
+            <div>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setManageAccessOpen(true)}>
+                Manage access
+              </button>
+            </div>
+          )}
+          {request.status === 'OPEN' && request.documentType !== 'WEBSITE_DOCUMENTS' && (
             <div>
               <input
                 ref={(el) => {
@@ -276,6 +285,8 @@ export function DocumentCentre({
           </div>
         </>
       )}
+
+      {manageAccessOpen && <ManageAccessPanel onClose={() => setManageAccessOpen(false)} />}
     </div>
   );
 }
