@@ -129,32 +129,21 @@ export function IntakeWizard({ initial }: { initial: any }) {
   }, []);
 
   return (
-    <div>
-      <div className="mb-6 flex items-center gap-3">
+    <div className="card card-pad">
+      <div className="section-title">Business Goals &amp; Marketing Activity</div>
+      <div className="wizard-steps">
         {STEPS.map((s, i) => (
-          <div key={s.title} className="flex flex-1 items-center gap-3">
-            <div
-              className={clsx(
-                'flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
-                i === step ? 'bg-teal text-white' : i < step ? 'bg-emerald text-white' : 'bg-black/5 text-mist'
-              )}
-            >
-              {i + 1}
+          <div key={s.title} style={{ display: 'flex', alignItems: 'center', flex: i < STEPS.length - 1 ? 'none' : undefined }}>
+            <div className={clsx('wizard-step', i === step && 'active')}>
+              <span className="num">{i + 1}</span> {s.title}
             </div>
-            <span className={clsx('text-xs font-medium', i === step ? 'text-teal' : 'text-mist')}>{s.title}</span>
-            {i < STEPS.length - 1 && <div className="h-px flex-1 bg-slate/10" />}
+            {i < STEPS.length - 1 && <div className="wizard-rule" />}
           </div>
         ))}
       </div>
 
-      <p className="mb-6 text-xs text-mist">
-        {saveState === 'saving' && 'Saving…'}
-        {saveState === 'saved' && 'All changes saved — you can leave and come back anytime.'}
-        {saveState === 'idle' && ' '}
-      </p>
-
       {step === 0 && (
-        <div className="space-y-5">
+        <div>
           <Textarea
             label="Primary business goals"
             required
@@ -216,7 +205,7 @@ export function IntakeWizard({ initial }: { initial: any }) {
       )}
 
       {step === 1 && (
-        <div className="space-y-5">
+        <div>
           <Input
             label="Current website"
             value={state.currentWebsite}
@@ -234,7 +223,7 @@ export function IntakeWizard({ initial }: { initial: any }) {
             value={state.advertisingChannels}
             onChange={(v) => update('advertisingChannels', v)}
           />
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid-2" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
             <Select
               label="SEO activity"
               placeholder="Select one"
@@ -285,27 +274,36 @@ export function IntakeWizard({ initial }: { initial: any }) {
       )}
 
       {step >= STEPS.length && (
-        <div className="rounded-xl border border-emerald/30 bg-emerald/5 p-6 text-center">
-          <p className="font-heading text-base font-semibold text-emerald">Marketing intake saved</p>
-          <p className="mt-2 text-sm text-slate">
-            Thanks — SDM will review this alongside your business information and documents.
+        <div className="alert alert-success" style={{ flexDirection: 'column', textAlign: 'center', padding: 24 }}>
+          <p style={{ fontWeight: 700, margin: 0 }}>Marketing intake saved</p>
+          <p style={{ margin: '8px 0 0' }}>
+            Thanks &mdash; SDM will review this alongside your business information and documents.
           </p>
-          <Button variant="secondary" className="mt-4" onClick={() => setStep(0)}>
+          <Button variant="secondary" size="sm" style={{ marginTop: 16 }} onClick={() => setStep(0)}>
             Review your answers
           </Button>
         </div>
       )}
 
-      <div className={clsx('mt-8 flex justify-between border-t border-slate/10 pt-6', step >= STEPS.length && 'hidden')}>
-        <Button variant="secondary" disabled={step === 0} onClick={() => flushAndContinue(step - 1)}>
-          Back
-        </Button>
-        {step < STEPS.length - 1 ? (
-          <Button onClick={() => flushAndContinue(step + 1)}>Save &amp; Continue</Button>
-        ) : (
-          <Button onClick={() => flushAndContinue(STEPS.length)}>Save &amp; Finish</Button>
-        )}
-      </div>
+      {step < STEPS.length && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+          <div className="mono" style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+            {saveState === 'saving' && 'Saving…'}
+            {saveState === 'saved' && 'Auto-saved a moment ago'}
+            {saveState === 'idle' && ' '}
+          </div>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <Button variant="ghost" disabled={step === 0} onClick={() => flushAndContinue(step - 1)}>
+              Back
+            </Button>
+            {step < STEPS.length - 1 ? (
+              <Button onClick={() => flushAndContinue(step + 1)}>Save &amp; Continue</Button>
+            ) : (
+              <Button onClick={() => flushAndContinue(STEPS.length)}>Save &amp; Finish</Button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

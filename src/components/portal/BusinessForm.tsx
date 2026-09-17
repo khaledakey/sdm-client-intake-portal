@@ -93,89 +93,92 @@ export function BusinessForm({ business }: { business: Business }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Input
-          label="Business name"
+    <form onSubmit={onSubmit}>
+      <div className="card card-pad">
+        <div className="section-title">Business Details</div>
+        <div className="section-sub">Section A of your intake.</div>
+
+        <div className="grid-2">
+          <Input
+            label="Business name"
+            required
+            value={form.businessName}
+            onChange={(e) => update('businessName', e.target.value)}
+          />
+          <Input
+            label="Trading name"
+            hint="Optional, if different from your registered business name."
+            value={form.tradingName}
+            onChange={(e) => update('tradingName', e.target.value)}
+          />
+        </div>
+
+        <div className="grid-2">
+          <Input
+            label="Business website"
+            required
+            placeholder="https://"
+            value={form.website}
+            onChange={(e) => update('website', e.target.value)}
+          />
+          <Select
+            label="Industry"
+            required
+            placeholder="Select an industry"
+            options={INDUSTRY_OPTIONS}
+            value={form.industry}
+            onChange={(e) => update('industry', e.target.value)}
+          />
+        </div>
+
+        <Textarea
+          label="Business description"
           required
-          value={form.businessName}
-          onChange={(e) => update('businessName', e.target.value)}
+          hint="A couple of sentences about what your business does."
+          value={form.businessDescription}
+          onChange={(e) => update('businessDescription', e.target.value)}
         />
-        <Input
-          label="Trading name"
-          hint="Optional, if different from your registered business name."
-          value={form.tradingName}
-          onChange={(e) => update('tradingName', e.target.value)}
-        />
+
+        <div className="grid-2">
+          <Input
+            label="Business location"
+            required
+            placeholder="e.g. Cork, Ireland"
+            value={form.location}
+            onChange={(e) => update('location', e.target.value)}
+          />
+          <Input
+            label="Primary service area"
+            required
+            placeholder="e.g. Munster, All-Ireland, International"
+            value={form.serviceArea}
+            onChange={(e) => update('serviceArea', e.target.value)}
+          />
+        </div>
+
+        <div className="grid-2">
+          <Select
+            label="Number of employees"
+            required
+            placeholder="Select a range"
+            options={EMPLOYEE_OPTIONS}
+            value={form.employeeCount}
+            onChange={(e) => update('employeeCount', e.target.value)}
+          />
+          <Select
+            label="Current business stage"
+            required
+            placeholder="Select a stage"
+            options={STAGE_OPTIONS}
+            value={form.businessStage}
+            onChange={(e) => update('businessStage', e.target.value)}
+          />
+        </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Input
-          label="Business website"
-          required
-          placeholder="https://"
-          value={form.website}
-          onChange={(e) => update('website', e.target.value)}
-        />
-        <Select
-          label="Industry"
-          required
-          placeholder="Select an industry"
-          options={INDUSTRY_OPTIONS}
-          value={form.industry}
-          onChange={(e) => update('industry', e.target.value)}
-        />
-      </div>
-
-      <Textarea
-        label="Business description"
-        required
-        hint="A couple of sentences about what your business does."
-        value={form.businessDescription}
-        onChange={(e) => update('businessDescription', e.target.value)}
-      />
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Input
-          label="Business location"
-          required
-          placeholder="e.g. Cork, Ireland"
-          value={form.location}
-          onChange={(e) => update('location', e.target.value)}
-        />
-        <Input
-          label="Primary service area"
-          required
-          placeholder="e.g. Munster, All-Ireland, International"
-          value={form.serviceArea}
-          onChange={(e) => update('serviceArea', e.target.value)}
-        />
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Select
-          label="Number of employees"
-          required
-          placeholder="Select a range"
-          options={EMPLOYEE_OPTIONS}
-          value={form.employeeCount}
-          onChange={(e) => update('employeeCount', e.target.value)}
-        />
-        <Select
-          label="Current business stage"
-          required
-          placeholder="Select a stage"
-          options={STAGE_OPTIONS}
-          value={form.businessStage}
-          onChange={(e) => update('businessStage', e.target.value)}
-        />
-      </div>
-
-      <div className="border-t border-slate/10 pt-6">
-        <h3 className="mb-4 font-heading text-sm font-semibold uppercase tracking-wide text-slate">
-          Main contact
-        </h3>
-        <div className="grid gap-4 sm:grid-cols-3">
+      <div className="card card-pad">
+        <div className="section-title">Main Contact</div>
+        <div className="grid-2">
           <Input
             label="Contact name"
             required
@@ -189,6 +192,8 @@ export function BusinessForm({ business }: { business: Business }) {
             value={form.mainContactEmail}
             onChange={(e) => update('mainContactEmail', e.target.value)}
           />
+        </div>
+        <div style={{ maxWidth: 'calc(50% - 12px)' }}>
           <Input
             label="Contact phone"
             type="tel"
@@ -197,14 +202,18 @@ export function BusinessForm({ business }: { business: Business }) {
             onChange={(e) => update('mainContactPhone', e.target.value)}
           />
         </div>
-      </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <div className="flex items-center gap-3">
-        <Button type="submit" loading={saving}>
-          Save business information
-        </Button>
-        {savedAt && <span className="text-xs text-emerald">Saved</span>}
+        {error && (
+          <div className="alert alert-error" style={{ marginBottom: 18 }}>
+            {error}
+          </div>
+        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Button type="submit" loading={saving}>
+            Save changes
+          </Button>
+          {savedAt && <span style={{ fontSize: 12, color: 'var(--status-ok-text)' }}>Saved</span>}
+        </div>
       </div>
     </form>
   );
