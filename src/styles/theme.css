@@ -148,7 +148,7 @@ a:hover{ color:var(--portal-action-hover); }
 .dot-unread{ width:6px; height:6px; border-radius:50%; background:var(--status-warn-text-strong); display:inline-block; margin-right:8px; }
 
 /* ---- data table ---- */
-.table{ width:100%; border-collapse:collapse; }
+table.table{ display:table; width:100%; border-collapse:collapse; }
 .table th{ text-align:left; font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); padding:10px 12px; border-bottom:1px solid var(--border-card); font-weight:500; }
 .table td{ padding:14px 12px; border-bottom:1px solid var(--border-divider); font-size:14px; color:var(--text-body-strong); vertical-align:middle; }
 .table tr:last-child td{ border-bottom:none; }
@@ -157,7 +157,7 @@ a:hover{ color:var(--portal-action-hover); }
 /* stacked-card table for mobile (≤900px, matching the shell's own breakpoint) */
 .table-cards{ display:none; }
 @media (max-width:900px){
-  .table{ display:none; }
+  table.table{ display:none; }
   .table-cards{ display:block; }
   .t-card{ border:1px solid var(--border-card); border-radius:var(--radius-md); padding:16px; margin-bottom:10px; }
   .t-card .row{ display:flex; justify-content:space-between; padding:5px 0; font-size:13px; }
