@@ -12,7 +12,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force"
+    "db:reset": "prisma migrate reset --force",
+    "report:seed-duplicates": "tsx scripts/report-seed-duplicates.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
