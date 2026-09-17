@@ -2,6 +2,14 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
+import { assertSeedAllowed } from './seed-guard';
+
+try {
+  assertSeedAllowed();
+} catch (e) {
+  console.error(e instanceof Error ? e.message : e);
+  process.exit(1);
+}
 
 const prisma = new PrismaClient();
 
