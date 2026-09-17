@@ -16,8 +16,8 @@ const SEED_EMAILS = ['owner@brightleafcafe.ie', 'hello@kilkennyfitco.ie', 'info@
 
 async function main() {
   const businesses = await prisma.business.findMany({
-    where: { user: { email: { in: SEED_EMAILS } } },
-    include: { user: true },
+    where: { owner: { email: { in: SEED_EMAILS } } },
+    include: { owner: true },
   });
 
   let foundAny = false;
@@ -46,7 +46,7 @@ async function main() {
     if (!dupeRequests.length && !dupeDocuments.length && !dupeActivity.length) continue;
     foundAny = true;
 
-    console.log(`\n=== ${business.businessName} (${business.user.email}, businessId=${business.id}) ===`);
+    console.log(`\n=== ${business.businessName} (${business.owner.email}, businessId=${business.id}) ===`);
     console.log(`Total rows: ${requests.length} document requests, ${documents.length} documents, ${activity.length} activity log entries, ${tickets.length} support tickets`);
 
     for (const [label, group] of dupeRequests) {
