@@ -62,13 +62,6 @@ export default function LoginPage() {
           Sign in
         </Button>
       </form>
-
-      <p className="mt-8 text-sm text-slate">
-        New to SDM?{' '}
-        <Link href="/register" className="font-medium text-teal hover:underline">
-          Create your account
-        </Link>
-      </p>
     </div>
   );
 }
