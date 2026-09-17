@@ -1,54 +1,50 @@
-/* Portal Get Started Wizard — fonts + tokens.
-   Import once (e.g. in main.jsx / App.jsx): import './portal-wizard.css'
-   Font files are served from /public/fonts/ (Next.js serves /public at the
-   site root, so they're referenced here as /fonts/…). */
-
-@font-face { font-family: "Cinzel"; src: url("/fonts/cinzel-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
-@font-face { font-family: "Cormorant Garamond"; src: url("/fonts/cormorant-garamond-latin-300-normal.woff2") format("woff2"); font-weight: 300; font-style: normal; font-display: swap; }
-@font-face { font-family: "Cormorant Garamond"; src: url("/fonts/cormorant-garamond-v21-latin-regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "DM Mono"; src: url("/fonts/dm-mono-v16-latin-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "DM Mono"; src: url("/fonts/dm-mono-v16-latin-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
-/* DM Mono ships only 400/500 upstream — 700 synthesises from 500, same as the live site. */
+/* Portal Get Started Wizard — component classes for PortalWizard.jsx.
+   Fonts and color/shape tokens now come from the shared design system
+   (src/styles/theme.css -> tokens.css, imported globally from the root
+   layout via globals.css) — this file only maps the wizard's own
+   --pw-* aliases onto those shared tokens, plus the couple of values
+   (control padding, the stronger line weight) the wizard uses that
+   don't have a shared equivalent. */
 
 :root {
   /* type */
-  --pw-display: "Cinzel", Georgia, serif;
-  --pw-serif: "Cormorant Garamond", Georgia, serif;
-  --pw-mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --pw-display: var(--font-display, "Cinzel", Georgia, serif);
+  --pw-serif: var(--font-serif, "Cormorant Garamond", Georgia, serif);
+  --pw-mono: var(--font-mono, "DM Mono", ui-monospace, "SF Mono", Menlo, monospace);
 
   /* brand colour */
-  --pw-dark: #0e2e23;        /* hero band — aligned with the website's dark sections */
-  --pw-emerald: #146044;     /* actions, eyebrows, focus ring */
-  --pw-emerald-hover: #0e2e23;
-  --pw-forest: #0e2e23;      /* heading ink */
-  --pw-gold: #9c7720;        /* completed steps, NEXT · labels */
-  --pw-gold-bright: #c9a84c; /* gold on dark */
+  --pw-dark: var(--sdm-forest, #0e2e23);        /* hero band — aligned with the website's dark sections */
+  --pw-emerald: var(--sdm-emerald, #146044);     /* actions, eyebrows, focus ring */
+  --pw-emerald-hover: var(--sdm-forest, #0e2e23);
+  --pw-forest: var(--sdm-forest, #0e2e23);      /* heading ink */
+  --pw-gold: var(--sdm-gold, #9c7720);          /* completed steps, NEXT · labels */
+  --pw-gold-bright: var(--sdm-gold-bright, #c9a84c); /* gold on dark */
 
   /* ink ramp */
-  --pw-ink-900: #0e2e23;
-  --pw-ink-700: #2c4238;
-  --pw-ink-600: #3a5247;
-  --pw-ink-500: #4a6358;
+  --pw-ink-900: var(--sdm-ink-900, #0e2e23);
+  --pw-ink-700: var(--sdm-ink-700, #2c4238);
+  --pw-ink-600: var(--sdm-ink-600, #3a5247);
+  --pw-ink-500: var(--sdm-ink-500, #4a6358);
 
   /* surfaces */
-  --pw-page: #f8faf8;
-  --pw-card: #ffffff;
-  --pw-tint: #f1f6f3;
-  --pw-footer: #edf3ef;
-  --pw-line: rgba(14, 46, 35, 0.15);
-  --pw-line-strong: rgba(14, 46, 35, 0.28);
+  --pw-page: var(--sdm-page, #f8faf8);
+  --pw-card: var(--surface-card, #ffffff);
+  --pw-tint: var(--sdm-surface-tint-alt, #f1f6f3);
+  --pw-footer: var(--sdm-surface-footer, #edf3ef);
+  --pw-line: var(--sdm-line, rgba(14, 46, 35, 0.15));
+  --pw-line-strong: rgba(14, 46, 35, 0.28); /* wizard-only: stronger than --sdm-line-strong (0.20) */
 
-  /* error (warm amber — the brand has no red) */
-  --pw-error-ink: #8a5214;
-  --pw-error-rule: #b9781f;
-  --pw-error-bg: #fbf3e7;
-  --pw-error-border: #d9b98a;
+  /* error (warm amber — the brand has no red; same family as theme.css's --status-warn-*) */
+  --pw-error-ink: var(--status-warn-text, #8a5214);
+  --pw-error-rule: var(--status-warn-text-strong, #b9781f);
+  --pw-error-bg: var(--status-warn-bg, #fbf3e7);
+  --pw-error-border: var(--status-warn-border, #d9b98a);
 
   /* shape */
-  --pw-radius-input: 10px;
-  --pw-radius-card: 12px;
-  --pw-radius-panel: 16px;
-  --pw-shadow-xs: 0 1px 2px rgba(14, 46, 35, 0.05);
+  --pw-radius-input: 10px; /* wizard-only: theme.css's --radius-input is 8px, wizard controls are chunkier */
+  --pw-radius-card: var(--radius-card, 12px);
+  --pw-radius-panel: var(--radius-panel, 16px);
+  --pw-shadow-xs: var(--shadow-xs, 0 1px 2px rgba(14, 46, 35, 0.05));
 }
 
 /* Native control sizing the component relies on */
