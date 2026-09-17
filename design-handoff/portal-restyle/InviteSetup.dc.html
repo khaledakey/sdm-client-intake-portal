@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style> html,body{ margin:0; height:100%; } </style>
+</helmet>
+<div class="auth-shell" style="width:1440px;height:900px;">
+  <div class="auth-side">
+    <div class="auth-brand">S · D · M</div>
+    <div class="auth-headline">
+      <div class="k1">YOU&rsquo;VE BEEN INVITED</div>
+      <h2>Welcome to your<br><em>client portal</em></h2>
+      <p>Kilkenny Fit Co. has been invited to SDM&rsquo;s onboarding &amp; support portal. Set a password to get started.</p>
+    </div>
+    <div class="auth-foot">CLIENT PORTAL</div>
+  </div>
+  <div class="auth-main">
+    <div class="auth-card">
+      <div class="eyebrow">Set up your account</div>
+      <h1>Create your password</h1>
+      <p class="lede">hello@kilkennyfitco.ie &middot; invited by the SDM team</p>
+      <div class="field"><label>Password <span class="req">*</span></label><input class="input" type="password" placeholder="At least 10 characters"></div>
+      <div class="field"><label>Confirm password <span class="req">*</span></label><input class="input" type="password"></div>
+      <div class="checkbox-row" style="margin-bottom:22px;"><input type="checkbox" checked> I agree to the SDM client portal terms.</div>
+      <a class="btn btn-primary" href="Dashboard.dc.html" style="width:100%;justify-content:center;">Activate my account</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"sealUrl":{"editor":null,"default":"/_blob/bdee34e58387ea8e5d060c9dc0e43e4e"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return { sealUrl: this.props.sealUrl }; }
+}
+</script>
+</body>
+</html>

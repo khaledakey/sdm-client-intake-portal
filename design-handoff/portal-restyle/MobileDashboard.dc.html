@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style> html,body{ margin:0; height:100%; } </style>
+</helmet>
+<div class="shell" style="width:390px;height:844px;flex-direction:column;">
+  <div class="topbar" style="display:flex;">
+    <div class="wordmark">S · D · M PORTAL</div>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </div>
+  <div class="content" style="padding:20px 16px 40px;">
+    
+<h1 style="font-size:21px;">Welcome back, Darragh</h1>
+<p class="lede" style="font-size:13px;">Kilkenny Fit Co. &middot; Supporting Documents</p>
+<div class="card card-pad" style="padding:20px;margin-bottom:18px;">
+  <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><div class="section-title" style="margin:0;font-size:14px;">Onboarding progress</div><div class="mono" style="font-size:12px;color:var(--portal-action);">50%</div></div>
+  <div class="progress-track"><div class="progress-fill" style="width:50%;"></div></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface-tint);border-radius:var(--radius-md);padding:12px 14px;margin-top:16px;">
+    <div style="font-size:13px;"><strong>Next:</strong> Upload documents</div>
+    <a class="btn btn-primary btn-sm" href="MobileDashboard.dc.html">Continue</a>
+  </div>
+</div>
+<div class="card card-pad" style="padding:20px;">
+  <div class="section-title" style="font-size:14px;">Action Required</div>
+  <a class="list-row" href="MobileDocuments.dc.html" style="padding:12px 14px;"><div><div class="title" style="font-size:13px;">Brand guidelines</div><div class="sub">Requested by SDM</div></div><span class="chev">&rsaquo;</span></a>
+  <a class="list-row" href="MobileDocuments.dc.html" style="padding:12px 14px;"><div><div class="title" style="font-size:13px;"><span class="dot-unread"></span>Website access &mdash; invite sent</div><div class="sub">Requested by SDM</div></div><span class="chev">&rsaquo;</span></a>
+</div>
+
+  </div>
+  
+</div>
+</x-dc>
+<script data-dc-script data-props='{"sealUrl":{"editor":null,"default":"/_blob/bdee34e58387ea8e5d060c9dc0e43e4e"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return { sealUrl: this.props.sealUrl }; }
+}
+</script>
+</body>
+</html>
