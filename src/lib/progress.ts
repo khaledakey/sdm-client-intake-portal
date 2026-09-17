@@ -58,10 +58,10 @@ export const DEFAULT_DOCUMENT_REQUESTS: Array<{
     note: 'Existing brand guidelines, if available.',
   },
   {
-    label: 'Website access information',
+    label: 'Website access (grant via platform invite)',
     documentType: 'WEBSITE_DOCUMENTS',
-    required: true,
-    note: 'CMS/hosting access details or a document describing how to reach your webmaster.',
+    required: false,
+    note: 'Grant SDM access directly through your website/CMS/hosting platform’s own invite feature rather than sharing credentials here.',
   },
 ];
 
