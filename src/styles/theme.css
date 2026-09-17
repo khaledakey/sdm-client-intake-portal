@@ -203,10 +203,10 @@ a:hover{ color:var(--portal-action-hover); }
 /* ---- mobile topbar / drawer ---- */
 @media (max-width:900px){
   .sidebar{ display:none; }
-  .topbar{ display:flex; align-items:center; justify-content:space-between; background:var(--portal-header); padding:14px 20px; color:#fff; }
+  .topbar{ display:flex; align-items:center; justify-content:space-between; background:var(--portal-header); padding:14px 20px; color:#fff; position:sticky; top:0; z-index:30; }
   .topbar .wordmark{ font-family:var(--font-mono); letter-spacing:.2em; font-size:13px; }
   .content{ padding:24px 20px 48px; }
-  .header{ padding:16px 20px; }
+  .header{ display:none; }
   .grid-2{ grid-template-columns:1fr; }
   .auth-side{ display:none; }
 }
