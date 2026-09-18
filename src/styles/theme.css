@@ -185,7 +185,14 @@ table.table{ display:table; width:100%; border-collapse:collapse; }
   radial-gradient(ellipse 480px 380px at 15% 15%, rgba(20,96,68,.35), transparent 60%),
   radial-gradient(ellipse 420px 360px at 85% 85%, rgba(156,119,32,.22), transparent 60%); }
 .auth-side > *{ position:relative; }
-.auth-brand{ font-family:var(--font-mono); letter-spacing:.28em; font-size:12px; color:var(--portal-gold); }
+.auth-brand{ display:flex; align-items:center; gap:12px; text-decoration:none; }
+.auth-brand img{ width:40px; height:40px; border-radius:9999px; object-fit:contain; display:block; flex:0 0 auto; }
+.auth-brand-name{ display:block; font-family:var(--font-display); font-weight:700; font-size:14px; letter-spacing:.08em; color:#fff; }
+.auth-brand-sub{ display:block; font-family:var(--font-mono); font-weight:700; font-size:9px; letter-spacing:.28em; color:var(--portal-gold); margin-top:3px; }
+.auth-card-brand{ display:none; align-items:center; gap:10px; text-decoration:none; margin-bottom:28px; }
+.auth-card-brand img{ width:32px; height:32px; border-radius:9999px; object-fit:contain; display:block; flex:0 0 auto; }
+.auth-card-brand .auth-brand-name{ color:var(--text-body-strong); font-size:13px; }
+.auth-card-brand .auth-brand-sub{ color:var(--portal-action); }
 .auth-headline{ margin-top:auto; }
 .auth-headline .k1{ font-family:var(--font-mono); font-size:11px; letter-spacing:.28em; color:rgba(255,255,255,.55); margin-bottom:14px; }
 .auth-headline h2{ color:#fff; font-size:34px; line-height:1.15; margin-bottom:10px; }
@@ -209,6 +216,7 @@ table.table{ display:table; width:100%; border-collapse:collapse; }
   .header{ display:none; }
   .grid-2{ grid-template-columns:1fr; }
   .auth-side{ display:none; }
+  .auth-card-brand{ display:flex; }
   .list-row{ flex-wrap:wrap; row-gap:10px; }
 }
 .drawer{ position:fixed; inset:0 0 0 auto; width:78%; max-width:300px; background:var(--portal-header); z-index:20; padding:24px 0; }

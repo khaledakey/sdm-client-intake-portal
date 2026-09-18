@@ -111,7 +111,10 @@ export function PortalShell({
       <div className="main">
         {/* Mobile top bar */}
         <div className="topbar">
-          <div className="wordmark">S &middot; D &middot; M PORTAL</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src="/assets/sdm-seal.png" alt="Saoirse Digital Marketing" style={{ width: 22, height: 22 }} />
+            <div className="wordmark">S &middot; D &middot; M PORTAL</div>
+          </div>
           <button onClick={() => setOpen(true)} aria-label="Open menu" style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0 }}>
             <IconMenu width={22} height={22} />
           </button>
