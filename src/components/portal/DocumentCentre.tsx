@@ -180,7 +180,7 @@ export function DocumentCentre({
             }}
           >
             <IconUpload width={15} height={15} />
-            {uploadingId === 'general' ? 'Uploading…' : 'Choose file — no file chosen'}
+            {uploadingId === 'general' ? 'Uploading…' : 'Choose file · no file chosen'}
           </div>
           <input
             ref={generalInputRef}

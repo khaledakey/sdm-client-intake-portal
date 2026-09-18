@@ -70,9 +70,9 @@ const OPTIONS = {
     { value: 'either', label: 'Either' },
   ],
   stage: [
-    { value: 'startup', label: 'Startup — getting the first customers' },
-    { value: 'established', label: 'Established — steady but flat' },
-    { value: 'scaling', label: 'Scaling — growing and adding capacity' },
+    { value: 'startup', label: 'Startup · getting the first customers' },
+    { value: 'established', label: 'Established · steady but flat' },
+    { value: 'scaling', label: 'Scaling · growing and adding capacity' },
   ],
   teamSize: [
     { value: 'solo', label: 'Solo' },
@@ -200,7 +200,7 @@ export default function PortalWizard({
     if (forStep === 1) {
       const email = values.email.trim();
       if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-        next.email = "That email doesn't look right — check for a typo.";
+        next.email = "That email doesn't look right. Check for a typo.";
       }
       const digits = values.phone.replace(/\D/g, '');
       if (digits && digits.length < 7) {
@@ -256,7 +256,7 @@ export default function PortalWizard({
     const n = Object.keys(errors).length;
     if (!n) return '';
     return n === 1
-      ? "One answer on this step still needs attention — it's marked above."
+      ? "One answer on this step still needs attention. It's marked above."
       : `${n} answers on this step still need attention. They're marked above.`;
   }, [errors]);
 
@@ -407,7 +407,7 @@ export default function PortalWizard({
                   })} />
                 </Field>
                 <Field name="current" label="What marketing are you doing today? *"
-                       help="Ads, social, email, SEO, referrals — including anything you've paused." error={errors.current}>
+                       help="Ads, social, email, SEO, referrals, including anything you've paused." error={errors.current}>
                   <textarea {...ctrl('current', {
                     rows: 3,
                     placeholder: 'Instagram twice a week, a Google Ads account we paused in March, word of mouth.',
@@ -423,7 +423,7 @@ export default function PortalWizard({
                     <span style={S.eyebrow}>03 · PRIORITIES</span>
                     <h2 style={S.h2}>What needs to change</h2>
                     <Knot src={knotSrc} />
-                    <p style={S.lede}>Last step. A rough budget range is enough — it tells us which recommendations are realistic, and nothing here is a commitment.</p>
+                    <p style={S.lede}>Last step. A rough budget range is enough: it tells us which recommendations are realistic, and nothing here is a commitment.</p>
                   </div>
                   <Field name="outcome" label="Which outcome matters most right now? *" error={errors.outcome}>
                     <textarea {...ctrl('outcome', {
@@ -536,8 +536,8 @@ export default function PortalWizard({
             <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.3em', color: 'var(--pw-emerald)' }}>REQUEST RECEIVED</span>
             <h2 style={{ margin: 0, fontFamily: 'var(--pw-display)', fontWeight: 700, fontSize: 'clamp(28px, 4vw, 42px)', lineHeight: 1.15, color: 'var(--pw-ink-900)' }}>
               {values.firstName.trim()
-                ? `Thanks, ${values.firstName.trim()} — we have what we need to start.`
-                : 'Thanks — we have what we need to start.'}
+                ? `Thanks, ${values.firstName.trim()}. We have what we need to start.`
+                : 'Thanks. We have what we need to start.'}
             </h2>
             <p style={{ margin: 0, maxWidth: '56ch', fontFamily: 'var(--pw-serif)', fontWeight: 300, fontSize: 19, lineHeight: 1.6, color: 'var(--pw-ink-600)', textWrap: 'pretty' }}>
               {values.email.trim()

@@ -80,7 +80,7 @@ export function DocumentReviewRow({
           <span className="mb-1.5 block text-sm font-medium text-midnight">Notes to client</span>
           <input
             className="w-full rounded-lg border border-slate/20 px-3 py-2 text-sm focus:border-teal focus:outline-none focus:ring-2 focus:ring-teal/20"
-            placeholder="Optional — visible if additional info is required"
+            placeholder="Optional: visible if additional info is required"
             value={notes}
             onChange={(e) => {
               setNotes(e.target.value);

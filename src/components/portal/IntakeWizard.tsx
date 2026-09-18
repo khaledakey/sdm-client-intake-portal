@@ -75,8 +75,8 @@ const NAMED_KEYS = [
 ] as const;
 
 const STEPS = [
-  { title: 'Business Goals', description: 'Section B — where you want your business to go.' },
-  { title: 'Current Marketing Activity', description: 'Section C — what you’re doing today.' },
+  { title: 'Business Goals', description: 'Section B · where you want your business to go.' },
+  { title: 'Current Marketing Activity', description: 'Section C · what you’re doing today.' },
 ];
 
 export function IntakeWizard({ initial }: { initial: any }) {
@@ -277,7 +277,7 @@ export function IntakeWizard({ initial }: { initial: any }) {
         <div className="alert alert-success" style={{ flexDirection: 'column', textAlign: 'center', padding: 24 }}>
           <p style={{ fontWeight: 700, margin: 0 }}>Marketing intake saved</p>
           <p style={{ margin: '8px 0 0' }}>
-            Thanks &mdash; SDM will review this alongside your business information and documents.
+            Thanks. SDM will review this alongside your business information and documents.
           </p>
           <Button variant="secondary" size="sm" style={{ marginTop: 16 }} onClick={() => setStep(0)}>
             Review your answers

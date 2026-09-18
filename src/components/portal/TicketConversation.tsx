@@ -145,7 +145,7 @@ export function TicketConversation({ ticket, messages }: { ticket: Ticket; messa
               }}
             >
               <IconUpload width={15} height={15} />
-              {file ? file.name : 'Choose file — no file chosen'}
+              {file ? file.name : 'Choose file · no file chosen'}
             </div>
             <input id="reply-attachment" type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
             <div style={{ display: 'flex', gap: 10 }}>

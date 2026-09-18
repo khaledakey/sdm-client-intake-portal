@@ -14,7 +14,7 @@ export default async function IntakePage() {
   return (
     <div>
       <h1>Marketing Intake</h1>
-      <p className="lede">Progress saves automatically as you go &mdash; come back anytime to finish up.</p>
+      <p className="lede">Progress saves automatically as you go. Come back anytime to finish up.</p>
       <IntakeWizard initial={{ ...intake, extendedData: parseExtendedData(intake.extendedData) }} />
     </div>
   );

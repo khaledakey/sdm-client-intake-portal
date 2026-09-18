@@ -10,7 +10,7 @@ export default async function BusinessPage() {
   return (
     <div>
       <h1>My Business</h1>
-      <p className="lede">Keep your business profile up to date &mdash; SDM uses this to shape your strategy.</p>
+      <p className="lede">Keep your business profile up to date. SDM uses this to shape your strategy.</p>
       <BusinessForm business={business} />
     </div>
   );

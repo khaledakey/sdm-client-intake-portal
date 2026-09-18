@@ -17,7 +17,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <em>Marketing</em>
           </h2>
           <p>
-            Your secure onboarding and support portal &mdash; a strategic digital marketing partner for
+            Your secure onboarding and support portal, a strategic digital marketing partner for
             Irish SMEs.
           </p>
         </div>

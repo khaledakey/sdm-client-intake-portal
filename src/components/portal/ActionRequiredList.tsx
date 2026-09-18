@@ -5,7 +5,7 @@ export function ActionRequiredList({ actions }: { actions: OutstandingAction[] }
   if (actions.length === 0) {
     return (
       <div className="empty" style={{ padding: '24px 0', textAlign: 'left' }}>
-        Nothing outstanding right now &mdash; you&apos;re all caught up.
+        Nothing outstanding right now. You&apos;re all caught up.
       </div>
     );
   }

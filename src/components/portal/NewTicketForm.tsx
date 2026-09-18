@@ -9,10 +9,10 @@ import { TICKET_CATEGORY_LABELS } from '@/lib/format';
 
 const CATEGORY_OPTIONS = Object.entries(TICKET_CATEGORY_LABELS).map(([value, label]) => ({ value, label }));
 const PRIORITY_OPTIONS = [
-  { value: 'LOW', label: 'Low — general, no rush' },
-  { value: 'NORMAL', label: 'Normal — standard turnaround' },
-  { value: 'HIGH', label: 'High — impacting your work' },
-  { value: 'URGENT', label: 'Urgent — business-critical, needs immediate attention' },
+  { value: 'LOW', label: 'Low · general, no rush' },
+  { value: 'NORMAL', label: 'Normal · standard turnaround' },
+  { value: 'HIGH', label: 'High · impacting your work' },
+  { value: 'URGENT', label: 'Urgent · business-critical, needs immediate attention' },
 ];
 
 export function NewTicketForm() {
@@ -78,7 +78,7 @@ export function NewTicketForm() {
           }}
         >
           <p style={{ margin: '0 0 10px' }}>
-            Urgent is reserved for business-critical issues &mdash; e.g. your website or ads are down, or an
+            Urgent is reserved for business-critical issues: your website or ads are down, or an
             active campaign is broken. For everything else, High priority gets fast attention too.
           </p>
           <Textarea
@@ -96,7 +96,7 @@ export function NewTicketForm() {
         required
         rows={5}
         style={{ minHeight: 130 }}
-        hint="Include as much detail as you can — what happened, when, and what you've already tried."
+        hint="Include as much detail as you can: what happened, when, and what you've already tried."
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
@@ -118,7 +118,7 @@ export function NewTicketForm() {
           }}
         >
           <IconUpload width={15} height={15} />
-          {file ? file.name : 'Choose file — no file chosen'}
+          {file ? file.name : 'Choose file · no file chosen'}
         </div>
         <input
           id="ticket-attachment"

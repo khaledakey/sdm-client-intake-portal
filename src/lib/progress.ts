@@ -150,9 +150,9 @@ export function nextRecommendedAction(stepDone: Record<string, boolean>): {
     return { label: 'Complete your marketing intake form', href: '/intake', actionLabel: 'Continue' };
   if (!stepDone.SUPPORTING_DOCUMENTS)
     return { label: 'Upload your outstanding documents', href: '/documents', actionLabel: 'Continue' };
-  if (!stepDone.SDM_REVIEW) return { label: 'Sit tight — SDM is reviewing your submission', href: null };
+  if (!stepDone.SDM_REVIEW) return { label: 'Sit tight · SDM is reviewing your submission', href: null };
   if (!stepDone.ONBOARDING_COMPLETE)
-    return { label: 'Onboarding almost done — SDM will confirm completion shortly', href: null };
+    return { label: 'Onboarding almost done · SDM will confirm completion shortly', href: null };
   return {
     label: "You're fully onboarded. Need anything? SDM is a message away.",
     href: null,
