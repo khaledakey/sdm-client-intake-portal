@@ -14,7 +14,8 @@
     "prisma:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force",
     "report:seed-duplicates": "tsx scripts/report-seed-duplicates.ts",
-    "report:legacy-website-access-label": "tsx scripts/report-legacy-website-access-label.ts"
+    "report:legacy-website-access-label": "tsx scripts/report-legacy-website-access-label.ts",
+    "create:staff-user": "tsx scripts/create-staff-user.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
