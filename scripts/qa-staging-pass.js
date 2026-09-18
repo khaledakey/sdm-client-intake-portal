@@ -91,7 +91,13 @@ async function login(context, email, password) {
   await page.goto(`${BASE}/login`, { waitUntil: 'networkidle' });
   await page.fill('input[type=email]', email);
   await page.fill('input[type=password]', password);
-  await page.click('button[type=submit]');
+  await Promise.all([
+    // Login redirects client-side after the POST resolves; networkidle right
+    // after the click can resolve while still on /login, before the redirect
+    // fires, so wait for the URL to actually change off /login.
+    page.waitForURL((url) => !url.pathname.startsWith('/login'), { timeout: 15000 }),
+    page.click('button[type=submit]'),
+  ]);
   await page.waitForLoadState('networkidle');
   await page.close();
 }
