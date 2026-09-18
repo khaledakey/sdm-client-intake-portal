@@ -5,8 +5,21 @@ export function formatBytes(bytes: number) {
   return `${(bytes / 1024 ** i).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 }
 
+// Pin an explicit timeZone. Without one, toLocale*String falls back to the
+// runtime's local system timezone -- which is UTC on Railway's server but
+// whatever the visitor's OS reports in the browser, so server-rendered and
+// client-rendered text differ by the UTC offset and React throws a
+// hydration mismatch (#425/#418/#423). SDM operates out of Ireland, so pin
+// Europe/Dublin regardless of where either render happens.
+const SDM_TIME_ZONE = 'Europe/Dublin';
+
 export function formatDate(date: string | Date) {
-  return new Date(date).toLocaleDateString('en-IE', { day: 'numeric', month: 'short', year: 'numeric' });
+  return new Date(date).toLocaleDateString('en-IE', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: SDM_TIME_ZONE,
+  });
 }
 
 export function formatDateTime(date: string | Date) {
@@ -16,6 +29,7 @@ export function formatDateTime(date: string | Date) {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: SDM_TIME_ZONE,
   });
 }
 

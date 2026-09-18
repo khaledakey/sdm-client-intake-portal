@@ -2,19 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap');
-
-:root {
-  --midnight: #0a0f1a;
-  --deep-ocean: #0d1b2e;
-  --slate: #1a2a3e;
-  --teal: #1e6e6b;
-  --emerald: #2dac72;
-  --gold: #c9a84c;
-  --cream: #f5f0e8;
-  --mist: #b8c4d0;
-  --cyan: #3ecfb2;
-}
+/* Cinzel, Cormorant Garamond, and DM Mono are self-hosted via theme.css
+   (see src/styles/theme.css -> tokens.css) — Inter isn't part of the
+   design system and keeps loading from Google Fonts. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import '../styles/theme.css';
 
 * {
   border-color: theme('colors.slate.DEFAULT' / 15%);
@@ -25,27 +17,21 @@ body {
   height: 100%;
 }
 
-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background-color: #f5f7f6;
-  color: var(--midnight);
-}
-
 ::selection {
-  background: var(--cyan);
-  color: var(--midnight);
+  background: var(--action-primary);
+  color: #fff;
 }
 
 .font-heading {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-display); /* Cinzel */
 }
 
 .font-display {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-serif); /* Cormorant Garamond */
 }
 
 .font-label {
-  font-family: 'DM Mono', ui-monospace, monospace;
+  font-family: var(--font-mono); /* DM Mono */
 }
 
 /* Scrollbar polish for the portal shell */
@@ -53,6 +39,6 @@ body {
   width: 8px;
 }
 .sdm-scroll::-webkit-scrollbar-thumb {
-  background: rgba(10, 15, 26, 0.15);
+  background: var(--sdm-line);
   border-radius: 999px;
 }

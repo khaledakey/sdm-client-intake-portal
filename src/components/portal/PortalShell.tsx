@@ -28,6 +28,15 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   settings: IconSettings,
 };
 
+const SIGNOUT_BUTTON_RESET: React.CSSProperties = {
+  background: 'none',
+  border: 'none',
+  width: '100%',
+  textAlign: 'left',
+  cursor: 'pointer',
+  padding: '16px 0 0',
+};
+
 export function PortalShell({
   businessName,
   firstName,
@@ -49,102 +58,107 @@ export function PortalShell({
     router.refresh();
   }
 
-  const NavLinks = (
-    <nav className="flex flex-1 flex-col gap-1 px-3">
-      {NAV_ITEMS.map((item) => {
-        const Icon = ICONS[item.icon];
-        const active = pathname === item.href || pathname.startsWith(item.href + '/');
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setOpen(false)}
-            className={clsx(
-              'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-              active ? 'bg-teal/10 text-teal' : 'text-mist hover:bg-white/5 hover:text-white'
-            )}
-          >
-            <Icon className="h-5 w-5 shrink-0" />
-            <span className="flex-1">{item.label}</span>
-            {item.icon === 'bell' && actionCount > 0 && (
-              <span className="rounded-full bg-gold px-1.5 py-0.5 text-[10px] font-bold text-midnight">
-                {actionCount}
-              </span>
-            )}
-          </Link>
-        );
-      })}
-    </nav>
-  );
+  function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+    return (
+      <>
+        {NAV_ITEMS.map((item) => {
+          const Icon = ICONS[item.icon];
+          const active = pathname === item.href || pathname.startsWith(item.href + '/');
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              className={clsx('nav-item', active && 'active')}
+            >
+              <Icon />
+              <span>{item.label}</span>
+              {item.icon === 'bell' && actionCount > 0 && (
+                <span
+                  className="badge pill pill-required"
+                  style={{ background: 'var(--portal-gold)', color: 'var(--portal-header)', border: 'none', padding: '2px 8px' }}
+                >
+                  {actionCount}
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#f5f7f6]">
+    <div className="shell">
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col bg-midnight py-6 lg:flex">
-        <div className="mb-8 px-6">
-          <p className="font-heading text-sm font-semibold uppercase tracking-[0.6em] text-gold">SDM</p>
-          <p className="font-label mt-1.5 text-[11px] uppercase tracking-[0.25em] text-cyan">Client Portal</p>
+      <nav className="sidebar">
+        <div className="sidebar-brand">
+          <img src="/assets/sdm-seal.png" alt="Saoirse Digital Marketing" />
+          <div>
+            <div className="wordmark">S D M</div>
+            <div className="tagline">Client Portal</div>
+          </div>
         </div>
-        {NavLinks}
-        <div className="mt-auto px-3 pt-4">
-          <button
-            onClick={logout}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-mist hover:bg-white/5 hover:text-white"
-          >
-            <IconLogout className="h-5 w-5" />
-            Sign out
+        <NavLinks />
+        <div className="sidebar-foot">
+          <button onClick={logout} className="signout" style={SIGNOUT_BUTTON_RESET}>
+            <IconLogout width={16} height={16} />
+            <span>Sign out</span>
           </button>
         </div>
-      </aside>
+      </nav>
 
-      {/* Mobile top bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-black/5 bg-white px-4 py-3 lg:hidden">
-        <button onClick={() => setOpen(true)} aria-label="Open menu" className="p-1.5 text-midnight">
-          <IconMenu className="h-6 w-6" />
-        </button>
-        <p className="font-label text-xs uppercase tracking-[0.35em] text-teal">SDM Portal</p>
-        <div className="w-6" />
-      </header>
+      <div className="main">
+        {/* Mobile top bar */}
+        <div className="topbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src="/assets/sdm-seal.png" alt="Saoirse Digital Marketing" style={{ width: 22, height: 22 }} />
+            <div className="wordmark">S &middot; D &middot; M PORTAL</div>
+          </div>
+          <button onClick={() => setOpen(true)} aria-label="Open menu" style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0 }}>
+            <IconMenu width={22} height={22} />
+          </button>
+        </div>
+
+        <div className="header">
+          <div className="who">
+            <div className="eyebrow">Welcome back</div>
+            <div className="name">
+              {firstName} <span className="biz">&middot; {businessName}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="content">{children}</div>
+      </div>
 
       {/* Mobile drawer */}
       {open && (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-          <aside className="absolute inset-y-0 left-0 flex w-72 flex-col bg-midnight py-6">
-            <div className="mb-8 flex items-center justify-between px-6">
-              <div>
-                <p className="font-heading text-sm font-semibold uppercase tracking-[0.6em] text-gold">SDM</p>
-                <p className="font-label mt-1.5 text-[11px] uppercase tracking-[0.25em] text-cyan">Client Portal</p>
+        <>
+          <div className="drawer-scrim" onClick={() => setOpen(false)} />
+          <div className="drawer">
+            <div className="sidebar-brand" style={{ justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <img src="/assets/sdm-seal.png" alt="Saoirse Digital Marketing" style={{ width: 28, height: 28 }} />
+                <div>
+                  <div className="wordmark" style={{ fontSize: 13 }}>S D M</div>
+                  <div className="tagline">Client Portal</div>
+                </div>
               </div>
-              <button onClick={() => setOpen(false)} aria-label="Close menu" className="text-mist">
-                <IconClose className="h-5 w-5" />
+              <button onClick={() => setOpen(false)} aria-label="Close menu" style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 0 }}>
+                <IconClose width={16} height={16} />
               </button>
             </div>
-            {NavLinks}
-            <div className="mt-auto px-3 pt-4">
-              <button
-                onClick={logout}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-mist hover:bg-white/5 hover:text-white"
-              >
-                <IconLogout className="h-5 w-5" />
-                Sign out
+            <NavLinks onNavigate={() => setOpen(false)} />
+            <div className="sidebar-foot">
+              <button onClick={logout} className="signout" style={SIGNOUT_BUTTON_RESET}>
+                <IconLogout width={16} height={16} />
+                <span>Sign out</span>
               </button>
             </div>
-          </aside>
-        </div>
-      )}
-
-      <div className="lg:pl-64">
-        <div className="hidden items-center justify-between border-b border-black/5 bg-white px-8 py-4 lg:flex">
-          <div>
-            <p className="font-label text-[11px] uppercase tracking-[0.3em] text-teal">Welcome back</p>
-            <p className="font-heading text-lg font-semibold text-midnight">
-              {firstName} <span className="font-sans text-sm font-normal text-slate">&middot; {businessName}</span>
-            </p>
           </div>
-        </div>
-        <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">{children}</main>
-      </div>
+        </>
+      )}
     </div>
   );
 }

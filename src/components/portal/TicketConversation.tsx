@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/Button';
+import { IconUpload } from '@/components/icons';
 import { StatusBadge, PriorityBadge } from '@/components/portal/TicketBadges';
 import { formatDateTime } from '@/lib/format';
 
@@ -72,70 +73,82 @@ export function TicketConversation({ ticket, messages }: { ticket: Ticket; messa
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, gap: 16, flexWrap: 'wrap' }}>
         <div>
-          <p className="text-xs uppercase tracking-wide text-mist">SDM-{ticket.ticketNumber}</p>
-          <h1 className="font-heading text-xl font-semibold text-midnight">{ticket.subject}</h1>
-          <p className="mt-1 text-xs text-slate">
+          <div className="mono" style={{ fontSize: 12, color: 'var(--text-muted)' }}>SDM-{ticket.ticketNumber}</div>
+          <h1 style={{ marginTop: 2 }}>{ticket.subject}</h1>
+          <p className="lede" style={{ marginTop: 4 }}>
             Opened {formatDateTime(ticket.createdAt)}
             {ticket.assignedTo && ` · Assigned to ${ticket.assignedTo.firstName} ${ticket.assignedTo.lastName}`}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', gap: 8 }}>
           <PriorityBadge priority={ticket.priority} />
           <StatusBadge status={status} />
         </div>
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-slate/10 bg-white p-5">
+      <div className="card card-pad">
         {items.map((msg) => (
           <div
             key={msg.id}
             className={clsx(
-              'max-w-[85%] rounded-xl p-3.5 text-sm',
-              msg.senderType === 'CLIENT'
-                ? 'ml-auto bg-teal/10 text-midnight'
-                : msg.senderType === 'SYSTEM'
-                ? 'mx-auto bg-black/5 text-center text-xs text-slate'
-                : 'bg-slate/5 text-midnight'
+              msg.senderType === 'SYSTEM' ? undefined : 'bubble',
+              msg.senderType === 'CLIENT' && 'bubble-client',
+              msg.senderType === 'SDM_TEAM' && 'bubble-team'
             )}
+            style={
+              msg.senderType === 'SYSTEM'
+                ? { textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', margin: '10px auto' }
+                : undefined
+            }
           >
             {msg.senderType !== 'SYSTEM' && (
-              <p className="mb-1 text-xs font-semibold text-slate">
-                {msg.senderType === 'CLIENT' ? 'You' : msg.sender ? `${msg.sender.firstName} · SDM Team` : 'SDM Team'}
-              </p>
+              <div className="who">{msg.senderType === 'CLIENT' ? 'You' : msg.sender ? `${msg.sender.firstName} · SDM Team` : 'SDM Team'}</div>
             )}
-            <p className="whitespace-pre-wrap">{msg.message}</p>
+            <div className={msg.senderType === 'SYSTEM' ? undefined : 'msg'} style={{ whiteSpace: 'pre-wrap' }}>
+              {msg.message}
+            </div>
             {msg.attachmentReference && (
-              <a
-                href={`/api/tickets/${ticket.id}/messages/${msg.id}/attachment`}
-                className="mt-2 inline-block text-xs font-medium text-teal underline"
-              >
+              <a href={`/api/tickets/${ticket.id}/messages/${msg.id}/attachment`} style={{ display: 'inline-block', marginTop: 6, fontSize: 12 }}>
                 View attachment
               </a>
             )}
-            <p className="mt-1.5 text-[11px] text-mist">{formatDateTime(msg.createdAt)}</p>
+            {msg.senderType !== 'SYSTEM' && <div className="time">{formatDateTime(msg.createdAt)}</div>}
           </div>
         ))}
       </div>
 
       {status !== 'CLOSED' ? (
-        <form onSubmit={sendReply} className="space-y-3 rounded-2xl border border-slate/10 bg-white p-5">
+        <form onSubmit={sendReply} className="card card-pad" style={{ marginTop: 16 }}>
           <textarea
-            className="w-full rounded-lg border border-slate/20 p-3 text-sm focus:border-teal focus:outline-none focus:ring-2 focus:ring-teal/20"
-            rows={3}
-            placeholder="Write a reply to SDM…"
+            className="textarea"
+            style={{ minHeight: 90, marginBottom: 14 }}
+            placeholder="Write a reply to SDM..."
             value={reply}
             onChange={(e) => setReply(e.target.value)}
           />
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <input
-              type="file"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="text-xs text-slate file:mr-3 file:rounded-lg file:border-0 file:bg-teal/10 file:px-2.5 file:py-1.5 file:text-xs file:font-medium file:text-teal"
-            />
-            <div className="flex gap-2">
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <div
+              onClick={() => document.getElementById('reply-attachment')?.click()}
+              style={{
+                border: '1px dashed var(--border-card)',
+                borderRadius: 'var(--radius-md)',
+                padding: '10px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                color: 'var(--text-muted)',
+                fontSize: 13,
+                cursor: 'pointer',
+              }}
+            >
+              <IconUpload width={15} height={15} />
+              {file ? file.name : 'Choose file — no file chosen'}
+            </div>
+            <input id="reply-attachment" type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            <div style={{ display: 'flex', gap: 10 }}>
               {status === 'RESOLVED' && (
                 <Button type="button" variant="secondary" onClick={closeTicket}>
                   Close ticket
@@ -146,12 +159,16 @@ export function TicketConversation({ ticket, messages }: { ticket: Ticket; messa
               </Button>
             </div>
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && (
+            <div className="alert alert-error" style={{ marginTop: 14 }}>
+              {error}
+            </div>
+          )}
         </form>
       ) : (
-        <p className="rounded-xl bg-black/5 p-4 text-center text-sm text-slate">
+        <div className="empty" style={{ marginTop: 16 }}>
           This ticket is closed. Open a new ticket if you need further help.
-        </p>
+        </div>
       )}
     </div>
   );

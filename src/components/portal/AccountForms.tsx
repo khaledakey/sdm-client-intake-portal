@@ -33,8 +33,9 @@ export function ProfileForm({ firstName, lastName, phone }: { firstName: string;
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+    <form onSubmit={onSubmit} className="card card-pad">
+      <div className="section-title">Profile</div>
+      <div className="grid-2">
         <Input
           label="First name"
           required
@@ -48,14 +49,24 @@ export function ProfileForm({ firstName, lastName, phone }: { firstName: string;
           onChange={(e) => setForm({ ...form, lastName: e.target.value })}
         />
       </div>
-      <Input
-        label="Phone number"
-        required
-        value={form.phone}
-        onChange={(e) => setForm({ ...form, phone: e.target.value })}
-      />
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {message && <p className="text-sm text-emerald">{message}</p>}
+      <div style={{ maxWidth: 'calc(50% - 12px)' }}>
+        <Input
+          label="Phone number"
+          required
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+        />
+      </div>
+      {error && (
+        <div className="alert alert-error" style={{ marginBottom: 18 }}>
+          {error}
+        </div>
+      )}
+      {message && (
+        <div className="alert alert-success" style={{ marginBottom: 18 }}>
+          {message}
+        </div>
+      )}
       <Button type="submit" loading={saving}>
         Save changes
       </Button>
@@ -90,7 +101,9 @@ export function PasswordForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="card card-pad">
+      <div className="section-title">Password</div>
+      <div className="section-sub">Choose a strong, unique password.</div>
       <Input
         label="Current password"
         type="password"
@@ -106,8 +119,16 @@ export function PasswordForm() {
         value={form.newPassword}
         onChange={(e) => setForm({ ...form, newPassword: e.target.value })}
       />
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {message && <p className="text-sm text-emerald">{message}</p>}
+      {error && (
+        <div className="alert alert-error" style={{ marginBottom: 18 }}>
+          {error}
+        </div>
+      )}
+      {message && (
+        <div className="alert alert-success" style={{ marginBottom: 18 }}>
+          {message}
+        </div>
+      )}
       <Button type="submit" loading={saving}>
         Update password
       </Button>

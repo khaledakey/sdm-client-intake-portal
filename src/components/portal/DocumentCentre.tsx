@@ -3,11 +3,10 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Field';
 import { IconUpload, IconFile, IconTrash } from '@/components/icons';
 import { DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS, formatBytes, formatDate } from '@/lib/format';
+import { ManageAccessPanel } from '@/components/portal/ManageAccessPanel';
 
 type DocumentRow = {
   id: string;
@@ -32,11 +31,11 @@ type RequestRow = {
 
 const CATEGORY_OPTIONS = Object.entries(DOCUMENT_TYPE_LABELS).map(([value, label]) => ({ value, label }));
 
-const STATUS_TONE: Record<string, 'neutral' | 'teal' | 'emerald' | 'gold'> = {
-  UPLOADED: 'teal',
-  UNDER_REVIEW: 'gold',
-  APPROVED: 'emerald',
-  ADDITIONAL_INFO_REQUIRED: 'gold',
+const STATUS_PILL: Record<string, string> = {
+  UPLOADED: 'pill-progress',
+  UNDER_REVIEW: 'pill-review',
+  APPROVED: 'pill-verified',
+  ADDITIONAL_INFO_REQUIRED: 'pill-required',
 };
 
 export function DocumentCentre({
@@ -52,6 +51,7 @@ export function DocumentCentre({
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [generalCategory, setGeneralCategory] = useState('OTHER');
+  const [manageAccessOpen, setManageAccessOpen] = useState(false);
   const generalInputRef = useRef<HTMLInputElement>(null);
   const requestInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -95,74 +95,92 @@ export function DocumentCentre({
   const fulfilled = requests.filter((r) => r.status === 'FULFILLED');
 
   return (
-    <div className="space-y-6">
-      {error && <p className="text-sm text-red-600">{error}</p>}
+    <div className="card card-pad">
+      <div className="section-title">Document Upload Centre</div>
+      {error && (
+        <div className="alert alert-error" style={{ marginTop: 12 }}>
+          {error}
+        </div>
+      )}
 
-      <div>
-        <h3 className="mb-3 font-heading text-sm font-semibold uppercase tracking-wide text-slate">
-          Requested by SDM
-        </h3>
-        {outstanding.length === 0 && fulfilled.length === 0 && (
-          <p className="text-sm text-mist">No specific documents have been requested yet.</p>
-        )}
-        <div className="space-y-3">
-          {[...outstanding, ...fulfilled].map((request) => (
-            <div
-              key={request.id}
-              className={clsx(
-                'flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between',
-                request.status === 'FULFILLED' ? 'border-emerald/30 bg-emerald/5' : 'border-slate/10'
-              )}
-            >
-              <div>
-                <p className="flex items-center gap-2 text-sm font-medium text-midnight">
-                  {request.label}
-                  <Badge tone={request.required ? 'gold' : 'mist'}>{request.required ? 'Required' : 'Optional'}</Badge>
-                  {request.status === 'FULFILLED' && <Badge tone="emerald">Submitted</Badge>}
-                </p>
-                {request.note && <p className="mt-1 text-xs text-slate">{request.note}</p>}
-              </div>
-              {request.status === 'OPEN' && (
-                <div>
-                  <input
-                    ref={(el) => {
-                      requestInputRefs.current[request.id] = el;
-                    }}
-                    type="file"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) upload(file, request.documentType, request.id);
-                      e.target.value = '';
-                    }}
-                  />
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    loading={uploadingId === request.id}
-                    onClick={() => requestInputRefs.current[request.id]?.click()}
-                  >
-                    <IconUpload className="h-3.5 w-3.5" /> Upload
-                  </Button>
-                </div>
+      <div className="eyebrow" style={{ margin: '18px 0 10px' }}>Requested by SDM</div>
+      {outstanding.length === 0 && fulfilled.length === 0 && (
+        <div className="empty" style={{ padding: '16px 0', textAlign: 'left' }}>No specific documents have been requested yet.</div>
+      )}
+      {[...outstanding, ...fulfilled].map((request) => (
+        <div key={request.id} className="list-row">
+          <div>
+            <div className="title">
+              {request.label}{' '}
+              <span className={clsx('pill', request.required ? 'pill-required' : 'pill-optional')} style={{ marginLeft: 8 }}>
+                {request.required ? 'Required' : 'Optional'}
+              </span>
+              {request.status === 'FULFILLED' && (
+                <span className="pill pill-submitted" style={{ marginLeft: 8 }}>Submitted</span>
               )}
             </div>
-          ))}
+            {request.note && <div className="sub">{request.note}</div>}
+          </div>
+          {request.status === 'OPEN' && request.documentType === 'WEBSITE_DOCUMENTS' && (
+            <div>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setManageAccessOpen(true)}>
+                Manage access
+              </button>
+            </div>
+          )}
+          {request.status === 'OPEN' && request.documentType !== 'WEBSITE_DOCUMENTS' && (
+            <div>
+              <input
+                ref={(el) => {
+                  requestInputRefs.current[request.id] = el;
+                }}
+                type="file"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) upload(file, request.documentType, request.id);
+                  e.target.value = '';
+                }}
+              />
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => requestInputRefs.current[request.id]?.click()}
+                disabled={uploadingId === request.id}
+              >
+                <IconUpload width={14} height={14} /> {uploadingId === request.id ? 'Uploading…' : 'Upload'}
+              </button>
+            </div>
+          )}
         </div>
-      </div>
+      ))}
 
-      <div className="rounded-xl border border-dashed border-slate/20 p-5">
-        <h3 className="mb-3 font-heading text-sm font-semibold uppercase tracking-wide text-slate">
-          Upload another document
-        </h3>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <div className="flex-1">
-            <Select
-              label="Document category"
-              options={CATEGORY_OPTIONS}
-              value={generalCategory}
-              onChange={(e) => setGeneralCategory(e.target.value)}
-            />
+      <div className="eyebrow" style={{ margin: '26px 0 10px' }}>Upload another document</div>
+      <div className="grid-2" style={{ alignItems: 'end' }}>
+        <Select
+          label="Category"
+          options={CATEGORY_OPTIONS}
+          value={generalCategory}
+          onChange={(e) => setGeneralCategory(e.target.value)}
+        />
+        <div className="field">
+          <label>File</label>
+          <div
+            onClick={() => generalInputRef.current?.click()}
+            style={{
+              border: '1px dashed var(--border-card)',
+              borderRadius: 'var(--radius-md)',
+              padding: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              color: 'var(--text-muted)',
+              fontSize: 13,
+              cursor: 'pointer',
+            }}
+          >
+            <IconUpload width={15} height={15} />
+            {uploadingId === 'general' ? 'Uploading…' : 'Choose file — no file chosen'}
           </div>
           <input
             ref={generalInputRef}
@@ -174,81 +192,101 @@ export function DocumentCentre({
               e.target.value = '';
             }}
           />
-          <Button loading={uploadingId === 'general'} onClick={() => generalInputRef.current?.click()}>
-            <IconUpload className="h-4 w-4" /> Choose file
-          </Button>
+          <span className="hint">PDF, Office, image, or archive files up to 20MB.</span>
         </div>
-        <p className="mt-2 text-xs text-mist">PDF, Office, image, or archive files up to 20MB.</p>
       </div>
 
-      <div>
-        <h3 className="mb-3 font-heading text-sm font-semibold uppercase tracking-wide text-slate">
-          Your documents
-        </h3>
-        {documents.length === 0 ? (
-          <p className="text-sm text-mist">Nothing uploaded yet.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead>
-                <tr className="border-b border-slate/10 text-xs uppercase tracking-wide text-mist">
-                  <th className="py-2 pr-4 font-medium">Document</th>
-                  <th className="py-2 pr-4 font-medium">Type</th>
-                  <th className="py-2 pr-4 font-medium">Uploaded</th>
-                  <th className="py-2 pr-4 font-medium">Size</th>
-                  <th className="py-2 pr-4 font-medium">Status</th>
-                  <th className="py-2 pr-0 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {documents.map((doc) => (
-                  <tr key={doc.id} className="border-b border-slate/5">
-                    <td className="py-3 pr-4">
-                      <div className="flex items-center gap-2">
-                        <IconFile className="h-4 w-4 shrink-0 text-mist" />
-                        <span className="text-midnight">{doc.fileName}</span>
-                      </div>
-                    </td>
-                    <td className="py-3 pr-4 text-slate">{DOCUMENT_TYPE_LABELS[doc.documentType]}</td>
-                    <td className="py-3 pr-4 text-slate">
-                      {formatDate(doc.uploadDate)}
-                      <span className="block text-xs text-mist">
-                        by {doc.uploadedBy.firstName} {doc.uploadedBy.lastName}
-                      </span>
-                    </td>
-                    <td className="py-3 pr-4 text-slate">{formatBytes(doc.fileSize)}</td>
-                    <td className="py-3 pr-4">
-                      <Badge tone={STATUS_TONE[doc.reviewStatus] || 'neutral'}>
-                        {DOCUMENT_STATUS_LABELS[doc.reviewStatus]}
-                      </Badge>
-                      {doc.reviewNotes && <p className="mt-1 max-w-xs text-xs text-slate">{doc.reviewNotes}</p>}
-                    </td>
-                    <td className="py-3 pr-0 text-right">
-                      <div className="flex justify-end gap-2">
-                        <a
-                          href={`/api/documents/${doc.id}/download`}
-                          className="rounded-lg border border-slate/20 px-2.5 py-1.5 text-xs font-medium text-midnight hover:border-teal/40 hover:text-teal"
+      <div className="eyebrow" style={{ margin: '26px 0 10px' }}>Your documents</div>
+      {documents.length === 0 ? (
+        <div className="empty" style={{ padding: '16px 0', textAlign: 'left' }}>Nothing uploaded yet.</div>
+      ) : (
+        <>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Type</th>
+                <th>Uploaded</th>
+                <th>Size</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {documents.map((doc) => (
+                <tr key={doc.id}>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <IconFile width={16} height={16} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+                      {doc.fileName}
+                    </div>
+                  </td>
+                  <td className="muted">{DOCUMENT_TYPE_LABELS[doc.documentType]}</td>
+                  <td className="muted">
+                    {formatDate(doc.uploadDate)}
+                    <div className="mono" style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                      by {doc.uploadedBy.firstName} {doc.uploadedBy.lastName}
+                    </div>
+                  </td>
+                  <td className="muted">{formatBytes(doc.fileSize)}</td>
+                  <td>
+                    <span className={clsx('pill', STATUS_PILL[doc.reviewStatus] || 'pill-normal')}>
+                      {DOCUMENT_STATUS_LABELS[doc.reviewStatus]}
+                    </span>
+                    {doc.reviewNotes && <div className="sub" style={{ maxWidth: 220 }}>{doc.reviewNotes}</div>}
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                      <a href={`/api/documents/${doc.id}/download`}>Download</a>
+                      {doc.reviewStatus !== 'APPROVED' && (
+                        <button
+                          type="button"
+                          onClick={() => remove(doc.id)}
+                          aria-label="Remove document"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--status-error-text)', padding: 0 }}
                         >
-                          Download
-                        </a>
-                        {doc.reviewStatus !== 'APPROVED' && (
-                          <button
-                            onClick={() => remove(doc.id)}
-                            className="rounded-lg border border-slate/20 p-1.5 text-red-500 hover:border-red-300"
-                            aria-label="Remove document"
-                          >
-                            <IconTrash className="h-3.5 w-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          <IconTrash width={14} height={14} />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="table-cards">
+            {documents.map((doc) => (
+              <div key={doc.id} className="t-card">
+                <div style={{ fontWeight: 600, marginBottom: 8 }}>{doc.fileName}</div>
+                <div className="row"><span className="k">Type</span><span>{DOCUMENT_TYPE_LABELS[doc.documentType]}</span></div>
+                <div className="row"><span className="k">Uploaded</span><span>{formatDate(doc.uploadDate)}</span></div>
+                <div className="row"><span className="k">Size</span><span>{formatBytes(doc.fileSize)}</span></div>
+                <div className="row">
+                  <span className="k">Status</span>
+                  <span className={clsx('pill', STATUS_PILL[doc.reviewStatus] || 'pill-normal')}>
+                    {DOCUMENT_STATUS_LABELS[doc.reviewStatus]}
+                  </span>
+                </div>
+                <div style={{ marginTop: 10, display: 'flex', gap: 14 }}>
+                  <a href={`/api/documents/${doc.id}/download`}>Download</a>
+                  {doc.reviewStatus !== 'APPROVED' && (
+                    <button
+                      type="button"
+                      onClick={() => remove(doc.id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--status-error-text)', padding: 0 }}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        )}
-      </div>
+        </>
+      )}
+
+      {manageAccessOpen && <ManageAccessPanel onClose={() => setManageAccessOpen(false)} />}
     </div>
   );
 }

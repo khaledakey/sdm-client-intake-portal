@@ -13,15 +13,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<Variant, string> = {
-  primary: 'bg-teal text-white hover:bg-[#175452] disabled:bg-teal/50',
-  secondary: 'bg-white text-midnight border border-slate/20 hover:border-teal/50 hover:text-teal',
-  ghost: 'bg-transparent text-midnight hover:bg-black/5',
-  danger: 'bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300',
-};
-
-const sizeClasses: Record<Size, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2.5 text-sm',
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  ghost: 'btn-ghost',
+  danger: 'btn-destructive',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -32,12 +27,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <button
       ref={ref}
       disabled={disabled || loading}
-      className={clsx(
-        'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors disabled:cursor-not-allowed',
-        variantClasses[variant],
-        sizeClasses[size],
-        className
-      )}
+      className={clsx('btn', variantClasses[variant], size === 'sm' && 'btn-sm', className)}
       {...props}
     >
       {loading && (

@@ -3,8 +3,6 @@ import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { recalcProgress, nextRecommendedAction, ONBOARDING_STEPS } from '@/lib/progress';
 import { getOutstandingActions } from '@/lib/actions';
-import { Card, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
 import { ProgressTracker } from '@/components/portal/ProgressTracker';
 import { ActionRequiredList } from '@/components/portal/ActionRequiredList';
 import { ActivityTimeline } from '@/components/portal/ActivityTimeline';
@@ -25,44 +23,49 @@ export default async function DashboardPage() {
   const currentStepLabel = ONBOARDING_STEPS.find((s) => s.key === currentStatus)?.label ?? 'Onboarding Complete';
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold text-midnight">
-          Welcome back, {user!.firstName}
-        </h1>
-        <p className="mt-1 text-sm text-slate">
-          {business.businessName} &middot; Current stage:{' '}
-          <span className="font-medium text-teal">{currentStepLabel}</span>
-        </p>
-      </div>
+    <div>
+      <h1>Welcome back, {user!.firstName}</h1>
+      <p className="lede">
+        {business.businessName} &middot; Current stage: {currentStepLabel}
+      </p>
 
-      <Card>
+      <div className="card card-pad" style={{ marginBottom: 24 }}>
         <ProgressTracker stepDone={stepDone as Record<string, boolean>} percentage={percentage} />
-        <div className="mt-6 flex flex-col items-start justify-between gap-3 rounded-xl bg-teal/5 p-4 sm:flex-row sm:items-center">
-          <p className="text-sm text-midnight">
-            <span className="font-semibold">Next step:</span> {recommended.label}
-          </p>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            background: 'var(--surface-tint)',
+            borderRadius: 'var(--radius-md)',
+            padding: '16px 20px',
+            marginTop: 22,
+            gap: 16,
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ fontSize: 14 }}>
+            <strong>Next step:</strong> {recommended.label}
+          </div>
           {recommended.href && (
-            <Link href={recommended.href}>
-              <Button size="sm">{recommended.actionLabel ?? 'Continue'}</Button>
+            <Link href={recommended.href} className="btn btn-primary btn-sm">
+              {recommended.actionLabel ?? 'Continue'}
             </Link>
           )}
         </div>
-      </Card>
+      </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader
-            title="Action Required"
-            description="Outstanding items SDM needs from you to keep things moving."
-          />
+      <div className="grid-2" style={{ gap: 24 }}>
+        <div className="card card-pad">
+          <div className="section-title">Action Required</div>
+          <div className="section-sub">Outstanding items SDM needs from you to keep things moving.</div>
           <ActionRequiredList actions={actions} />
-        </Card>
+        </div>
 
-        <Card>
-          <CardHeader title="Recent Activity" />
+        <div className="card card-pad">
+          <div className="section-title">Recent Activity</div>
           <ActivityTimeline items={activity} />
-        </Card>
+        </div>
       </div>
     </div>
   );

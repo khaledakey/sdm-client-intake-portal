@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { Card, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
 import { StatusBadge, PriorityBadge, CategoryLabel } from '@/components/portal/TicketBadges';
 import { formatDate } from '@/lib/format';
 
@@ -18,62 +16,70 @@ export default async function SupportPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
         <div>
-          <h1 className="font-heading text-2xl font-semibold text-midnight">Support Centre</h1>
-          <p className="mt-1 text-sm text-slate">Reach the SDM team and track your requests.</p>
+          <h1>Support Centre</h1>
+          <p className="lede">Reach the SDM team and track your requests.</p>
         </div>
-        <Link href="/support/new">
-          <Button>New support ticket</Button>
+        <Link href="/support/new" className="btn btn-primary">
+          New support ticket
         </Link>
       </div>
 
-      <Card>
-        <CardHeader title="Your tickets" />
+      <div className="card card-pad">
+        <div className="section-title">Your tickets</div>
         {tickets.length === 0 ? (
-          <p className="text-sm text-mist">You haven&apos;t raised any support tickets yet.</p>
+          <div className="empty" style={{ padding: '16px 0', textAlign: 'left' }}>You haven&apos;t raised any support tickets yet.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
+          <>
+            <table className="table" style={{ marginTop: 12 }}>
               <thead>
-                <tr className="border-b border-slate/10 text-xs uppercase tracking-wide text-mist">
-                  <th className="py-2 pr-4 font-medium">Ticket</th>
-                  <th className="py-2 pr-4 font-medium">Category</th>
-                  <th className="py-2 pr-4 font-medium">Priority</th>
-                  <th className="py-2 pr-4 font-medium">Status</th>
-                  <th className="py-2 pr-4 font-medium">Updated</th>
-                  <th className="py-2 pr-4 font-medium">Assigned</th>
+                <tr>
+                  <th>Ticket</th>
+                  <th>Category</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Updated</th>
+                  <th>Assigned</th>
                 </tr>
               </thead>
               <tbody>
                 {tickets.map((ticket) => (
-                  <tr key={ticket.id} className="border-b border-slate/5">
-                    <td className="py-3 pr-4">
-                      <Link href={`/support/${ticket.id}`} className="font-medium text-midnight hover:text-teal">
+                  <tr key={ticket.id}>
+                    <td>
+                      <Link href={`/support/${ticket.id}`} style={{ color: 'var(--text-heading)', fontWeight: 600 }}>
                         SDM-{ticket.ticketNumber} &middot; {ticket.subject}
                       </Link>
                     </td>
-                    <td className="py-3 pr-4 text-slate">
-                      <CategoryLabel category={ticket.category} />
-                    </td>
-                    <td className="py-3 pr-4">
-                      <PriorityBadge priority={ticket.priority} />
-                    </td>
-                    <td className="py-3 pr-4">
-                      <StatusBadge status={ticket.status} />
-                    </td>
-                    <td className="py-3 pr-4 text-slate">{formatDate(ticket.updatedAt)}</td>
-                    <td className="py-3 pr-4 text-slate">
+                    <td className="muted"><CategoryLabel category={ticket.category} /></td>
+                    <td><PriorityBadge priority={ticket.priority} /></td>
+                    <td><StatusBadge status={ticket.status} /></td>
+                    <td className="muted">{formatDate(ticket.updatedAt)}</td>
+                    <td className="muted">
                       {ticket.assignedTo ? `${ticket.assignedTo.firstName} ${ticket.assignedTo.lastName}` : 'Unassigned'}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
+
+            <div className="table-cards">
+              {tickets.map((ticket) => (
+                <div key={ticket.id} className="t-card">
+                  <Link href={`/support/${ticket.id}`} style={{ fontWeight: 600, color: 'var(--text-heading)' }}>
+                    SDM-{ticket.ticketNumber} &middot; {ticket.subject}
+                  </Link>
+                  <div className="row"><span className="k">Category</span><CategoryLabel category={ticket.category} /></div>
+                  <div className="row"><span className="k">Priority</span><PriorityBadge priority={ticket.priority} /></div>
+                  <div className="row"><span className="k">Status</span><StatusBadge status={ticket.status} /></div>
+                  <div className="row"><span className="k">Updated</span><span>{formatDate(ticket.updatedAt)}</span></div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
-      </Card>
+      </div>
     </div>
   );
 }

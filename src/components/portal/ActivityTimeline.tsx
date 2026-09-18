@@ -1,6 +1,6 @@
 import type { ActivityLog } from '@prisma/client';
 
-function timeAgo(date: Date) {
+export function timeAgo(date: Date) {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
   const units: [number, string][] = [
     [60, 'second'],
@@ -27,17 +27,18 @@ function timeAgo(date: Date) {
 
 export function ActivityTimeline({ items }: { items: ActivityLog[] }) {
   if (items.length === 0) {
-    return <p className="text-sm text-mist">No activity yet. Actions you take will appear here.</p>;
+    return <div className="empty" style={{ padding: '24px 0', textAlign: 'left' }}>No activity yet. Actions you take will appear here.</div>;
   }
   return (
-    <ol className="relative space-y-5 border-l border-slate/10 pl-5">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 6 }}>
       {items.map((item) => (
-        <li key={item.id} className="relative">
-          <span className="absolute -left-[25px] top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-teal" />
-          <p className="text-sm text-midnight">{item.description}</p>
-          <p className="mt-0.5 text-xs text-mist">{timeAgo(new Date(item.createdAt))}</p>
-        </li>
+        <div key={item.id}>
+          <div style={{ fontSize: 13 }}>{item.description}</div>
+          <div className="mono" style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
+            {timeAgo(new Date(item.createdAt))}
+          </div>
+        </div>
       ))}
-    </ol>
+    </div>
   );
 }
