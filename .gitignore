@@ -29,3 +29,7 @@ npm-debug.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+qa-output/
+qa-run-out.txt
+
