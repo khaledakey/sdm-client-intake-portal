@@ -245,6 +245,8 @@ export default function PortalWizard({
         await new Promise((r) => setTimeout(r, 900));
       }
       setResult({ reference: reference || `SDM-${new Date().getFullYear()}-0000` });
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'generate_lead', lead_source: 'free_marketing_snapshot' });
     } catch (err) {
       setSubmitError("We couldn't send that just now. Try again, or email hello@saoirsedigital.com and we'll pick it up.");
     } finally {
