@@ -6,7 +6,7 @@ import PortalWizard from './PortalWizard';
 
 const PARENT_ORIGIN = 'https://saoirsedigital.com';
 
-export function PortalWizardWrapper() {
+export function PortalWizardWrapper({ embed = false }: { embed?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,6 +33,7 @@ export function PortalWizardWrapper() {
         knotSrc="/assets/small-knot.svg"
         privacyHref="/privacy"
         homeHref="https://saoirsedigital.com"
+        embed={embed}
         onSubmit={async (payload: Record<string, unknown>) => {
           const res = await fetch('/api/public/portal-wizard', {
             method: 'POST',
