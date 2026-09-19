@@ -49,3 +49,6 @@ export const IconFile = (p: SVGProps<SVGSVGElement>) => (
 export const IconTrash = (p: SVGProps<SVGSVGElement>) => (
   <Icon {...p} d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-8 0 1 13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-13" />
 );
+export const IconUsers = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p} d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1M17 7.5a3 3 0 1 1-1.5 5.6M20.5 20v-1a4.5 4.5 0 0 0-3-4.24" />
+);

@@ -18,6 +18,17 @@ export const registerSchema = z.object({
  * password and emails a set-password link instead of taking one. */
 export const createUserApiSchema = registerSchema.omit({ password: true });
 
+export const inviteTeamMemberSchema = z.object({
+  firstName: z.string().trim().min(1, 'First name is required').max(80),
+  lastName: z.string().trim().min(1, 'Last name is required').max(80),
+  email: z.string().trim().toLowerCase().email('Enter a valid email address'),
+  role: z.enum(['SDM_ADMIN', 'SDM_TEAM_MEMBER']),
+});
+
+export const setActiveStatusSchema = z.object({
+  isActive: z.boolean(),
+});
+
 export const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
   password: z.string().min(1),

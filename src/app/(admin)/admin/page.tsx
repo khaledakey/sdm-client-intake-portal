@@ -9,7 +9,7 @@ export default async function AdminClientsPage() {
   const businesses = await prisma.business.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
-      owner: { select: { firstName: true, lastName: true, email: true } },
+      owner: { select: { firstName: true, lastName: true, email: true, isActive: true } },
       intake: true,
       _count: { select: { documents: true, supportTickets: true } },
     },
@@ -31,6 +31,7 @@ export default async function AdminClientsPage() {
                 <th className="py-2 pr-4 font-medium">Business</th>
                 <th className="py-2 pr-4 font-medium">Contact</th>
                 <th className="py-2 pr-4 font-medium">Stage</th>
+                <th className="py-2 pr-4 font-medium">Access</th>
                 <th className="py-2 pr-4 font-medium">Progress</th>
                 <th className="py-2 pr-4 font-medium">Documents</th>
                 <th className="py-2 pr-4 font-medium">Tickets</th>
@@ -56,6 +57,9 @@ export default async function AdminClientsPage() {
                       <Badge tone={b.intake?.onboardingStatus === 'ONBOARDING_COMPLETE' ? 'emerald' : 'teal'}>
                         {stageLabel}
                       </Badge>
+                    </td>
+                    <td className="py-3 pr-4">
+                      {b.owner.isActive ? <Badge tone="emerald">Active</Badge> : <Badge tone="red">Deactivated</Badge>}
                     </td>
                     <td className="py-3 pr-4 text-slate">{b.intake?.progressPercentage ?? 0}%</td>
                     <td className="py-3 pr-4 text-slate">{b._count.documents}</td>
