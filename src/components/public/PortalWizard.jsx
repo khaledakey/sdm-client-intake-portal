@@ -325,7 +325,7 @@ export default function PortalWizard({
       )}
 
       {!result ? (
-        <main style={{ maxWidth: 768, margin: '0 auto', padding: '40px 24px 96px' }}>
+        <main style={{ maxWidth: 768, margin: '0 auto', padding: `40px 24px ${embed ? 48 : 96}px` }}>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingBottom: 32 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
@@ -515,30 +515,30 @@ export default function PortalWizard({
               </div>
             )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap-reverse', gap: 12, alignItems: 'center' }}>
-                {step > 1 && (
-                  <button type="button" className="pw-btn pw-btn--secondary" onClick={goBack}>← Back</button>
-                )}
-                <span style={{ flex: 1, minWidth: 12 }} />
-                {step < 3 ? (
-                  <button type="button" className="pw-btn pw-btn--primary" onClick={goNext}>Continue ➔</button>
-                ) : (
-                  <button type="submit" className="pw-btn pw-btn--primary" disabled={submitting}>
-                    {submitting ? 'Sending…' : submitLabel}
-                  </button>
-                )}
-              </div>
-              <span style={{ fontFamily: 'var(--pw-serif)', fontSize: 16, lineHeight: 1.5, color: 'var(--pw-ink-500)', textWrap: 'pretty' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap-reverse', gap: 12, alignItems: 'center' }}>
+              {step > 1 && (
+                <button type="button" className="pw-btn pw-btn--secondary" onClick={goBack}>← Back</button>
+              )}
+              <span style={{
+                flex: 1, minWidth: 160, fontFamily: 'var(--pw-serif)', fontSize: 14,
+                lineHeight: 1.5, color: 'var(--pw-ink-500)', textWrap: 'pretty',
+              }}>
                 {step === 3
                   ? 'We reply within two business days. Free to request. No obligation.'
                   : 'Your answers are kept as you move between steps.'}
               </span>
+              {step < 3 ? (
+                <button type="button" className="pw-btn pw-btn--primary" onClick={goNext}>Continue ➔</button>
+              ) : (
+                <button type="submit" className="pw-btn pw-btn--primary" disabled={submitting}>
+                  {submitting ? 'Sending…' : submitLabel}
+                </button>
+              )}
             </div>
           </form>
         </main>
       ) : (
-        <main style={{ maxWidth: 768, margin: '0 auto', padding: '64px 24px 96px' }}>
+        <main style={{ maxWidth: 768, margin: '0 auto', padding: `64px 24px ${embed ? 48 : 96}px` }}>
           <div style={{
             background: 'var(--pw-card)', border: '1px solid var(--pw-line)',
             borderRadius: 'var(--pw-radius-panel)', boxShadow: 'var(--pw-shadow-xs)',
@@ -585,15 +585,20 @@ export default function PortalWizard({
         </main>
       )}
 
-      <footer style={{ background: 'var(--pw-footer)', borderTop: '1px solid var(--pw-line)', padding: '32px 24px' }}>
-        <div style={{
-          maxWidth: 768, margin: '0 auto', display: 'flex', flexWrap: 'wrap',
-          gap: '12px 32px', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.2em', color: 'var(--pw-ink-500)' }}>SDM · SAOIRSE DIGITAL MARKETING</span>
-          <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.2em', color: 'var(--pw-ink-500)' }}>WICKLOW · KILDARE · CARLOW · LEINSTER CORRIDOR</span>
-        </div>
-      </footer>
+      {/* Embed mode drops this: the website already has its own footer below
+          the iframe, so repeating the SDM address bar here would duplicate
+          it the same way the header/hero did. Standalone keeps it. */}
+      {!embed && (
+        <footer style={{ background: 'var(--pw-footer)', borderTop: '1px solid var(--pw-line)', padding: '32px 24px' }}>
+          <div style={{
+            maxWidth: 768, margin: '0 auto', display: 'flex', flexWrap: 'wrap',
+            gap: '12px 32px', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.2em', color: 'var(--pw-ink-500)' }}>SDM · SAOIRSE DIGITAL MARKETING</span>
+            <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.2em', color: 'var(--pw-ink-500)' }}>WICKLOW · KILDARE · CARLOW · LEINSTER CORRIDOR</span>
+          </div>
+        </footer>
+      )}
     </div>
   );
 }
