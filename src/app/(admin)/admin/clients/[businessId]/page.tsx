@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { getCurrentUser } from '@/lib/auth';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { recalcProgress, isBusinessInfoComplete, isMarketingInfoComplete, parseExtendedData } from '@/lib/progress';
 import { OnboardingControls } from '@/components/admin/OnboardingControls';
+import { ClientAccessControl } from '@/components/admin/ClientAccessControl';
 import { DocumentReviewRow } from '@/components/admin/DocumentReviewRow';
 import { DocumentRequestForm } from '@/components/admin/DocumentRequestForm';
 import { ActivityTimeline } from '@/components/portal/ActivityTimeline';
@@ -20,6 +22,7 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
 }
 
 export default async function ClientDetailPage({ params }: { params: { businessId: string } }) {
+  const currentUser = await getCurrentUser();
   const business = await prisma.business.findUnique({
     where: { id: params.businessId },
     include: { owner: true },
@@ -60,6 +63,15 @@ export default async function ClientDetailPage({ params }: { params: { businessI
           <Badge tone="teal">{percentage}% onboarded</Badge>
         </div>
       </div>
+
+      {currentUser?.role === 'SDM_ADMIN' && (
+        <Card>
+          <CardHeader title="Account access" description="Admin-only: revoke or restore this client's portal login." />
+          <div className="mt-3">
+            <ClientAccessControl businessId={business.id} isActive={business.owner.isActive} />
+          </div>
+        </Card>
+      )}
 
       <Card>
         <CardHeader title="Onboarding controls" description="Steps only SDM can advance." />

@@ -4,17 +4,20 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
-import { IconBriefcase, IconLifeBuoy, IconMenu, IconClose, IconLogout } from '@/components/icons';
+import { IconBriefcase, IconLifeBuoy, IconUsers, IconMenu, IconClose, IconLogout } from '@/components/icons';
 
 const NAV = [
   { href: '/admin', label: 'Clients', icon: IconBriefcase },
   { href: '/admin/tickets', label: 'Support Tickets', icon: IconLifeBuoy },
 ];
 
+const ADMIN_ONLY_NAV = [{ href: '/admin/team', label: 'Team', icon: IconUsers }];
+
 export function AdminShell({ name, role, children }: { name: string; role: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const nav = role === 'SDM_ADMIN' ? [...NAV, ...ADMIN_ONLY_NAV] : NAV;
 
   async function logout() {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -24,7 +27,7 @@ export function AdminShell({ name, role, children }: { name: string; role: strin
 
   const Links = (
     <nav className="flex flex-1 flex-col gap-1 px-3">
-      {NAV.map((item) => {
+      {nav.map((item) => {
         const active = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
         return (
           <Link

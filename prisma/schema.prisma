@@ -32,6 +32,9 @@ model User {
   phone               String?
   passwordAuthRef     String // password_auth_reference: bcrypt hash
   role                String    @default("CLIENT") // Role: CLIENT | SDM_ADMIN | SDM_TEAM_MEMBER
+  // extension: lets SDM_ADMIN revoke a staff or client login without deleting
+  // the account's history (documents, tickets, activity log stay intact).
+  isActive            Boolean   @default(true)
   emailVerifiedAt     DateTime?
   createdAt           DateTime  @default(now())
   lastLogin           DateTime?

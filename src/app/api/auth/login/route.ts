@@ -17,6 +17,9 @@ export async function POST(req: Request) {
   if (!user) return genericError();
   const valid = await verifyPassword(password, user.passwordAuthRef);
   if (!valid) return genericError();
+  if (!user.isActive) {
+    return NextResponse.json({ error: 'This account has been deactivated. Contact SDM for help.' }, { status: 403 });
+  }
 
   await prisma.user.update({ where: { id: user.id }, data: { lastLogin: new Date() } });
 

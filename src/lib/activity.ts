@@ -12,7 +12,9 @@ export type ActivityType =
   | 'ONBOARDING_COMPLETED'
   | 'TICKET_CREATED'
   | 'TICKET_MESSAGE'
-  | 'TICKET_STATUS_CHANGED';
+  | 'TICKET_STATUS_CHANGED'
+  | 'CLIENT_ACCESS_DEACTIVATED'
+  | 'CLIENT_ACCESS_REACTIVATED';
 
 /** Appends a row to the auditable Activity Log (Build Brief §9). Never
  * throws — activity logging must not block the primary operation. */

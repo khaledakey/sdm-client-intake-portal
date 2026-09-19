@@ -58,13 +58,17 @@ export const SESSION_COOKIE_OPTIONS = {
   maxAge: SESSION_TTL_SECONDS,
 };
 
-/** Server Components / Route Handlers: resolve the logged-in user (fresh from DB), or null. */
+/** Server Components / Route Handlers: resolve the logged-in user (fresh from DB), or null.
+ * A deactivated account (see requireAdmin's team/client access controls) resolves to null
+ * here so it's treated as signed out everywhere in one place, without touching Edge
+ * middleware (which can't reach Prisma) or every call site individually. */
 export async function getCurrentUser(): Promise<User | null> {
   const token = cookies().get(SESSION_COOKIE)?.value;
   if (!token) return null;
   const session = await verifySessionToken(token);
   if (!session) return null;
   const user = await prisma.user.findUnique({ where: { id: session.sub } });
+  if (!user || !user.isActive) return null;
   return user;
 }
 

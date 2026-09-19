@@ -26,6 +26,15 @@ export async function requireStaff(): Promise<User | NextResponse> {
   return user;
 }
 
+/** SDM_ADMIN only — not SDM_TEAM_MEMBER. For actions that affect who can
+ * log in at all: team invites/deactivation and client access. */
+export async function requireAdmin(): Promise<User | NextResponse> {
+  const user = await requireUser();
+  if (user instanceof NextResponse) return user;
+  if (user.role !== 'SDM_ADMIN') return forbidden();
+  return user;
+}
+
 /** Resolves the business owned by the current user (clients only have
  * exactly one). Staff never "own" a business through this helper. */
 export async function requireOwnBusiness() {
