@@ -528,9 +528,16 @@ export default function PortalWizard({
                   : 'Your answers are kept as you move between steps.'}
               </span>
               {step < 3 ? (
-                <button type="button" className="pw-btn pw-btn--primary" onClick={goNext}>Continue ➔</button>
+                // key differentiates this from the type="submit" button below: without it, React
+                // reuses the same DOM node across the step 2 -> 3 transition and just mutates its
+                // `type` attribute. That mutation happens synchronously inside this very click's
+                // handler (goNext -> setStep), while the browser is still mid-dispatch of the
+                // native click event; by the time it runs that click's default-action phase, the
+                // node's type already reads "submit", so the browser implicitly submits the form
+                // off a click that was, at the moment it was made, on a type="button" button.
+                <button key="continue" type="button" className="pw-btn pw-btn--primary" onClick={goNext}>Continue ➔</button>
               ) : (
-                <button type="submit" className="pw-btn pw-btn--primary" disabled={submitting}>
+                <button key="submit" type="submit" className="pw-btn pw-btn--primary" disabled={submitting}>
                   {submitting ? 'Sending…' : submitLabel}
                 </button>
               )}
