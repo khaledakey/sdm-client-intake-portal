@@ -176,6 +176,14 @@ export default function PortalWizard({
   privacyHref = '/privacy',
   homeHref = 'https://saoirsedigital.com',
   submitLabel = 'Get started',
+  // Embedded (iframed on saoirsedigital.com) hides the logo bar and hero —
+  // the host page already shows its own nav and hero above the iframe, so
+  // repeating them here reads as two stacked landing pages. The standalone
+  // portal URL (no embed param) keeps both, for anyone who lands on it
+  // directly. Applies uniformly across every step and the confirmation
+  // screen because both blocks render once here, above the step/result
+  // switch below, rather than being duplicated per step.
+  embed = false,
   onSubmit,
 }) {
   const [step, setStep] = useState(1);
@@ -279,41 +287,45 @@ export default function PortalWizard({
   return (
     <div style={{ minHeight: '100%', background: 'var(--pw-page)', fontFamily: 'var(--pw-serif)', color: 'var(--pw-ink-700)' }}>
 
-      <header style={{
-        position: 'sticky', top: 0, zIndex: 20, background: 'rgba(248,250,248,0.95)',
-        backdropFilter: 'blur(8px)', borderBottom: '1px solid var(--pw-line)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        gap: 16, padding: '14px 24px',
-      }}>
-        <a href={homeHref} style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-          <img src={sealSrc} alt="Saoirse Digital Marketing seal"
-               style={{ width: 40, height: 40, borderRadius: 9999, display: 'block', objectFit: 'contain' }} />
-          <span style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <span style={{ fontFamily: 'var(--pw-display)', fontWeight: 700, fontSize: 15, letterSpacing: '0.1em', color: 'var(--pw-ink-900)' }}>SAOIRSE DIGITAL</span>
-            <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 9, letterSpacing: '0.3em', color: 'var(--pw-emerald)' }}>MARKETING · IRELAND</span>
-          </span>
-        </a>
-        <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.2em', color: 'var(--pw-ink-500)', whiteSpace: 'nowrap' }}>GET STARTED</span>
-      </header>
+      {!embed && (
+        <header style={{
+          position: 'sticky', top: 0, zIndex: 20, background: 'rgba(248,250,248,0.95)',
+          backdropFilter: 'blur(8px)', borderBottom: '1px solid var(--pw-line)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 16, padding: '14px 24px',
+        }}>
+          <a href={homeHref} style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+            <img src={sealSrc} alt="Saoirse Digital Marketing seal"
+                 style={{ width: 40, height: 40, borderRadius: 9999, display: 'block', objectFit: 'contain' }} />
+            <span style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <span style={{ fontFamily: 'var(--pw-display)', fontWeight: 700, fontSize: 15, letterSpacing: '0.1em', color: 'var(--pw-ink-900)' }}>SAOIRSE DIGITAL</span>
+              <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 9, letterSpacing: '0.3em', color: 'var(--pw-emerald)' }}>MARKETING · IRELAND</span>
+            </span>
+          </a>
+          <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.2em', color: 'var(--pw-ink-500)', whiteSpace: 'nowrap' }}>GET STARTED</span>
+        </header>
+      )}
 
-      <section style={{ background: 'var(--pw-dark)', color: '#fff', padding: '56px 24px 48px', position: 'relative', overflow: 'hidden' }}>
-        <div aria-hidden="true" style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: 'radial-gradient(60% 80% at 20% 0%, rgba(20,96,68,0.55), transparent 70%), radial-gradient(50% 70% at 90% 100%, rgba(156,119,32,0.18), transparent 70%)',
-        }} />
-        <div style={{ position: 'relative', maxWidth: 768, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 18 }}>
-          <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.3em', color: 'var(--pw-gold-bright)' }}>FREE MARKETING SNAPSHOT</span>
-          <h1 style={{ margin: 0, fontFamily: 'var(--pw-display)', fontWeight: 700, fontSize: 'clamp(30px, 4.4vw, 44px)', lineHeight: 1.1, letterSpacing: '-0.015em', color: '#fff', textWrap: 'pretty' }}>
-            Your marketing clarity starts here.
-          </h1>
-          <p style={{ margin: 0, maxWidth: '60ch', fontFamily: 'var(--pw-serif)', fontWeight: 300, fontSize: 18, lineHeight: 1.6, color: 'rgba(255,255,255,0.88)', textWrap: 'pretty' }}>
-            Three short steps, about five minutes. We'll read your answers and reply with practical next steps within two business days.
-          </p>
-        </div>
-      </section>
+      {!embed && (
+        <section style={{ background: 'var(--pw-dark)', color: '#fff', padding: '56px 24px 48px', position: 'relative', overflow: 'hidden' }}>
+          <div aria-hidden="true" style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: 'radial-gradient(60% 80% at 20% 0%, rgba(20,96,68,0.55), transparent 70%), radial-gradient(50% 70% at 90% 100%, rgba(156,119,32,0.18), transparent 70%)',
+          }} />
+          <div style={{ position: 'relative', maxWidth: 768, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 18 }}>
+            <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.3em', color: 'var(--pw-gold-bright)' }}>FREE MARKETING SNAPSHOT</span>
+            <h1 style={{ margin: 0, fontFamily: 'var(--pw-display)', fontWeight: 700, fontSize: 'clamp(30px, 4.4vw, 44px)', lineHeight: 1.1, letterSpacing: '-0.015em', color: '#fff', textWrap: 'pretty' }}>
+              Your marketing clarity starts here.
+            </h1>
+            <p style={{ margin: 0, maxWidth: '60ch', fontFamily: 'var(--pw-serif)', fontWeight: 300, fontSize: 18, lineHeight: 1.6, color: 'rgba(255,255,255,0.88)', textWrap: 'pretty' }}>
+              Three short steps, about five minutes. We'll read your answers and reply with practical next steps within two business days.
+            </p>
+          </div>
+        </section>
+      )}
 
       {!result ? (
-        <main style={{ maxWidth: 768, margin: '0 auto', padding: '40px 24px 96px' }}>
+        <main style={{ maxWidth: 768, margin: '0 auto', padding: `40px 24px ${embed ? 48 : 96}px` }}>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingBottom: 32 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
@@ -503,30 +515,37 @@ export default function PortalWizard({
               </div>
             )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap-reverse', gap: 12, alignItems: 'center' }}>
-                {step > 1 && (
-                  <button type="button" className="pw-btn pw-btn--secondary" onClick={goBack}>← Back</button>
-                )}
-                <span style={{ flex: 1, minWidth: 12 }} />
-                {step < 3 ? (
-                  <button type="button" className="pw-btn pw-btn--primary" onClick={goNext}>Continue ➔</button>
-                ) : (
-                  <button type="submit" className="pw-btn pw-btn--primary" disabled={submitting}>
-                    {submitting ? 'Sending…' : submitLabel}
-                  </button>
-                )}
-              </div>
-              <span style={{ fontFamily: 'var(--pw-serif)', fontSize: 16, lineHeight: 1.5, color: 'var(--pw-ink-500)', textWrap: 'pretty' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap-reverse', gap: 12, alignItems: 'center' }}>
+              {step > 1 && (
+                <button type="button" className="pw-btn pw-btn--secondary" onClick={goBack}>← Back</button>
+              )}
+              <span style={{
+                flex: 1, minWidth: 160, fontFamily: 'var(--pw-serif)', fontSize: 14,
+                lineHeight: 1.5, color: 'var(--pw-ink-500)', textWrap: 'pretty',
+              }}>
                 {step === 3
                   ? 'We reply within two business days. Free to request. No obligation.'
                   : 'Your answers are kept as you move between steps.'}
               </span>
+              {step < 3 ? (
+                // key differentiates this from the type="submit" button below: without it, React
+                // reuses the same DOM node across the step 2 -> 3 transition and just mutates its
+                // `type` attribute. That mutation happens synchronously inside this very click's
+                // handler (goNext -> setStep), while the browser is still mid-dispatch of the
+                // native click event; by the time it runs that click's default-action phase, the
+                // node's type already reads "submit", so the browser implicitly submits the form
+                // off a click that was, at the moment it was made, on a type="button" button.
+                <button key="continue" type="button" className="pw-btn pw-btn--primary" onClick={goNext}>Continue ➔</button>
+              ) : (
+                <button key="submit" type="submit" className="pw-btn pw-btn--primary" disabled={submitting}>
+                  {submitting ? 'Sending…' : submitLabel}
+                </button>
+              )}
             </div>
           </form>
         </main>
       ) : (
-        <main style={{ maxWidth: 768, margin: '0 auto', padding: '64px 24px 96px' }}>
+        <main style={{ maxWidth: 768, margin: '0 auto', padding: `64px 24px ${embed ? 48 : 96}px` }}>
           <div style={{
             background: 'var(--pw-card)', border: '1px solid var(--pw-line)',
             borderRadius: 'var(--pw-radius-panel)', boxShadow: 'var(--pw-shadow-xs)',
@@ -573,15 +592,20 @@ export default function PortalWizard({
         </main>
       )}
 
-      <footer style={{ background: 'var(--pw-footer)', borderTop: '1px solid var(--pw-line)', padding: '32px 24px' }}>
-        <div style={{
-          maxWidth: 768, margin: '0 auto', display: 'flex', flexWrap: 'wrap',
-          gap: '12px 32px', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.2em', color: 'var(--pw-ink-500)' }}>SDM · SAOIRSE DIGITAL MARKETING</span>
-          <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.2em', color: 'var(--pw-ink-500)' }}>WICKLOW · KILDARE · CARLOW · LEINSTER CORRIDOR</span>
-        </div>
-      </footer>
+      {/* Embed mode drops this: the website already has its own footer below
+          the iframe, so repeating the SDM address bar here would duplicate
+          it the same way the header/hero did. Standalone keeps it. */}
+      {!embed && (
+        <footer style={{ background: 'var(--pw-footer)', borderTop: '1px solid var(--pw-line)', padding: '32px 24px' }}>
+          <div style={{
+            maxWidth: 768, margin: '0 auto', display: 'flex', flexWrap: 'wrap',
+            gap: '12px 32px', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.2em', color: 'var(--pw-ink-500)' }}>SDM · SAOIRSE DIGITAL MARKETING</span>
+            <span style={{ fontFamily: 'var(--pw-mono)', fontWeight: 700, fontSize: 10, letterSpacing: '0.2em', color: 'var(--pw-ink-500)' }}>WICKLOW · KILDARE · CARLOW · LEINSTER CORRIDOR</span>
+          </div>
+        </footer>
+      )}
     </div>
   );
 }
