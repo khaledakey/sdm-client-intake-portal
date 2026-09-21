@@ -31,7 +31,7 @@ export function PortalWizardWrapper({ embed = false }: { embed?: boolean }) {
       <PortalWizard
         sealSrc="/assets/sdm-seal.png"
         knotSrc="/assets/small-knot.svg"
-        privacyHref="/privacy"
+        privacyHref="https://saoirsedigital.com/privacy-notice"
         homeHref="https://saoirsedigital.com"
         embed={embed}
         onSubmit={async (payload: Record<string, unknown>) => {

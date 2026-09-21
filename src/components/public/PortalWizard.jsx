@@ -12,7 +12,7 @@
  *   <PortalWizard
  *     sealSrc="/assets/sdm-seal.png"
  *     knotSrc="/assets/small-knot.svg"
- *     privacyHref="/privacy"
+ *     privacyHref="https://saoirsedigital.com/privacy-notice"
  *     onSubmit={async (payload) => {
  *       const res = await fetch(MAKE_WEBHOOK_URL, {
  *         method: 'POST',
@@ -173,7 +173,7 @@ function Field({ name, label, help, error, children }) {
 export default function PortalWizard({
   sealSrc = '/assets/sdm-seal.png',
   knotSrc = '/assets/small-knot.svg',
-  privacyHref = '/privacy',
+  privacyHref = 'https://saoirsedigital.com/privacy-notice',
   homeHref = 'https://saoirsedigital.com',
   submitLabel = 'Get started',
   // Embedded (iframed on saoirsedigital.com) hides the logo bar and hero —
